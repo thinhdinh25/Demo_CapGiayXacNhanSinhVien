@@ -39,51 +39,6 @@ function getVietnameseFontPaths() {
   return { regular, bold: bold || regular };
 }
 
-/**
- * Vẽ Logo UET (Trường Đại học Công nghệ - ĐHQGHN) trực tiếp bằng vector sắc nét trên PDF
- */
-function drawUetLogo(doc, centerX, centerY, radius, fontBold) {
-  doc.save();
-
-  // Vòng tròn ngoài màu xanh UET (#003d79)
-  doc
-    .circle(centerX, centerY, radius)
-    .lineWidth(2)
-    .strokeColor('#003d79')
-    .fillAndStroke('#f0f7ff', '#003d79');
-
-  // Vòng tròn trong
-  doc
-    .circle(centerX, centerY, radius - 4)
-    .lineWidth(0.8)
-    .strokeColor('#005a32')
-    .stroke();
-
-  if (fontBold) {
-    doc.font(fontBold);
-  }
-
-  // Chữ UET chính giữa
-  doc
-    .fillColor('#003d79')
-    .fontSize(12)
-    .text('UET', centerX - radius, centerY - 9, {
-      width: radius * 2,
-      align: 'center'
-    });
-
-  // Dòng chữ VNU bên dưới trong logo
-  doc
-    .fillColor('#005a32')
-    .fontSize(6.5)
-    .text('VNU - HANOI', centerX - radius, centerY + 5, {
-      width: radius * 2,
-      align: 'center'
-    });
-
-  doc.restore();
-}
-
 function generateCertificatePDF(requestData) {
   return new Promise((resolve, reject) => {
     try {
@@ -104,8 +59,11 @@ function generateCertificatePDF(requestData) {
         else doc.font('Helvetica-Bold');
       };
 
-      // 1. Vẽ Logo UET ở góc trên bên trái
-      drawUetLogo(doc, 76, 68, 24, fontBold);
+      // 1. Chèn ảnh Logo UET chính thức (assets/logo-uet.jpg) ở góc trên bên trái
+      const logoPath = path.join(__dirname, '..', 'assets', 'logo-uet.jpg');
+      if (fs.existsSync(logoPath)) {
+        doc.image(logoPath, 46, 40, { width: 54 });
+      }
 
       // 2. Quốc hiệu & Tiêu ngữ chuẩn văn bản hành chính
       setRegular();
