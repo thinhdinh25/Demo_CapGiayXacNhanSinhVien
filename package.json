@@ -1,0 +1,18 @@
+{
+  "name": "demo-cap-giay-xac-nhan-sinh-vien",
+  "version": "1.0.0",
+  "description": "Web ứng dụng cấp giấy xác nhận sinh viên tích hợp Camunda 8 (Zeebe) + tự động gửi email bản mềm / hẹn lịch bản cứng",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "deploy-bpmn": "node scripts/deploy-bpmn.js"
+  },
+  "dependencies": {
+    "@camunda8/sdk": "^8.6.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "google-auth-library": "^11.3.4",
+    "nodemailer": "^6.9.13",
+    "pdfkit": "^0.15.0"
+  }
+}

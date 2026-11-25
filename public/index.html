@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hệ thống Cấp Giấy xác nhận Sinh viên - Đại học Quốc gia Hà Nội</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    :root {
+      --vnu-green: #005a32;
+      --vnu-green-dark: #004425;
+      --border: #d1d5db;
+      --border-light: #e5e7eb;
+      --bg-page: #f4f5f7;
+      --bg-white: #ffffff;
+      --text-main: #111827;
+      --text-secondary: #4b5563;
+      --text-muted: #6b7280;
+      --danger: #991b1b;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .site-header {
+      background-color: var(--vnu-green);
+      color: #ffffff;
+      border-bottom: 3px solid #b4975a;
+    }
+
+    .header-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .org-title {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .org-parent {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #d1fae5;
+    }
+
+    .org-name {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      margin-top: 2px;
+    }
+
+    .user-bar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 13px;
+    }
+
+    .btn-logout {
+      background: transparent;
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      padding: 5px 12px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .btn-logout:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .main-container {
+      max-width: 1120px;
+      margin: 28px auto;
+      padding: 0 20px;
+    }
+
+    .notice-bar {
+      padding: 12px 16px;
+      border-radius: 3px;
+      margin-bottom: 20px;
+      font-size: 13.5px;
+      display: none;
+    }
+
+    .notice-success {
+      background-color: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: #065f46;
+    }
+
+    .notice-error {
+      background-color: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+    }
+
+    .login-wrapper {
+      max-width: 420px;
+      margin: 48px auto;
+      background: var(--bg-white);
+      border: 1px solid var(--border);
+      border-top: 4px solid var(--vnu-green);
+      border-radius: 3px;
+      padding: 28px 32px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+
+    .login-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 0 0 4px 0;
+      color: var(--text-main);
+    }
+
+    .login-subtitle {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin: 0 0 20px 0;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 6px;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="email"],
+    input[type="datetime-local"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 8px 11px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      font-size: 14px;
+      color: var(--text-main);
+      background-color: #fff;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--vnu-green);
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 8px 16px;
+      font-size: 13.5px;
+      font-weight: 600;
+      border-radius: 3px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+    }
+
+    .btn-primary {
+      background-color: var(--vnu-green);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--vnu-green-dark);
+    }
+
+    .btn-secondary {
+      background-color: #ffffff;
+      color: #374151;
+      border-color: var(--border);
+    }
+
+    .btn-secondary:hover {
+      background-color: #f9fafb;
+    }
+
+    .btn-danger {
+      background-color: #ffffff;
+      color: var(--danger);
+      border-color: #fca5a5;
+    }
+
+    .btn-danger:hover {
+      background-color: #fef2f2;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      margin: 20px 0;
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: "";
+      flex: 1;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .divider span {
+      padding: 0 10px;
+    }
+
+    .google-auth-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .oauth-config-toggle {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: underline;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      margin-top: 4px;
+    }
+
+    .oauth-config-box {
+      width: 100%;
+      border: 1px solid var(--border-light);
+      background: #f9fafb;
+      padding: 12px;
+      border-radius: 3px;
+      margin-top: 6px;
+      font-size: 12.5px;
+      text-align: left;
+    }
+
+    .panel {
+      background: var(--bg-white);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      margin-bottom: 24px;
+    }
+
+    .panel-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border-light);
+      background-color: #fafafa;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .panel-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin: 0;
+      color: var(--text-main);
+    }
+
+    .panel-body {
+      padding: 20px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 768px) {
+      .grid-2,
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+    }
+
+    .data-table th {
+      text-align: left;
+      padding: 10px 12px;
+      background-color: #f9fafb;
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .data-table td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: top;
+    }
+
+    .status-text {
+      display: inline-block;
+      padding: 2px 8px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 2px;
+    }
+
+    .st-PENDING_VERIFY {
+      background-color: #fef3c7;
+      color: #92400e;
+    }
+
+    .st-COMPLETED_SOFT_SENT {
+      background-color: #d1fae5;
+      color: #065f46;
+    }
+
+    .st-COMPLETED_HARD_SCHEDULED {
+      background-color: #e0f2fe;
+      color: #075985;
+    }
+
+    .st-REJECTED {
+      background-color: #fee2f2;
+      color: #991b1b;
+    }
+
+    .admin-review-panel {
+      margin-top: 10px;
+      padding: 12px;
+      background-color: #f9fafb;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="org-title">
+        <span class="org-parent">Đại học Quốc gia Hà Nội</span>
+        <span class="org-name">HỆ THỐNG DỊCH VỤ HÀNH CHÍNH &amp; XÁC NHẬN SINH VIÊN</span>
+      </div>
+      <div id="userToolbar" class="user-bar hidden">
+        <span id="currentUserLabel"></span>
+        <button type="button" class="btn-logout" onclick="logout()">Đăng xuất</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-container">
+    <div id="alertBox" class="notice-bar"></div>
+
+    <!-- MÀN HÌNH ĐĂNG NHẬP -->
+    <div id="loginView" class="login-wrapper">
+      <h1 class="login-title">Đăng nhập hệ thống</h1>
+      <p class="login-subtitle">Dành cho cán bộ quản lý và sinh viên</p>
+
+      <!-- Thanh input đăng nhập (chỉ dành cho tài khoản ctsv@vnu.edu.vn) -->
+      <form onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label for="loginUsername">Tài khoản cán bộ</label>
+          <input
+            type="text"
+            id="loginUsername"
+            placeholder="Nhập email cán bộ"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Mật khẩu</label>
+          <input
+            type="password"
+            id="loginPassword"
+            placeholder="Nhập mật khẩu"
+            required
+          />
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 10px;">
+          Đăng nhập
+        </button>
+      </form>
+
+      <div class="divider"><span>DÀNH CHO SINH VIÊN</span></div>
+
+      <!-- Khu vực đăng nhập Google dành cho Sinh viên -->
+      <div class="google-auth-section">
+        <div id="googleButtonContainer" style="width: 100%; display: flex; justify-content: center;"></div>
+
+        <button
+          type="button"
+          id="btnCustomGoogleOAuth"
+          class="btn btn-secondary"
+          style="width: 100%; padding: 9px;"
+          onclick="triggerRealGooglePopup()"
+        >
+          Đăng nhập bằng tài khoản Google (Gmail)
+        </button>
+
+        <button type="button" class="oauth-config-toggle" onclick="toggleOAuthConfigBox()">
+          Thiết lập Google OAuth Client ID
+        </button>
+
+        <div id="oauthConfigBox" class="oauth-config-box hidden">
+          <div style="margin-bottom: 8px; color: #374151;">
+            Nhập <strong>Google OAuth 2.0 Client ID</strong> (từ Google Cloud Console &rarr; Credentials &rarr; Web application, thêm <code>http://localhost:3000</code> vào <em>Authorized JavaScript origins</em>):
+          </div>
+          <div class="form-group" style="margin-bottom: 8px;">
+            <input
+              type="text"
+              id="inputGoogleClientId"
+              placeholder="xxxx-xxxx.apps.googleusercontent.com"
+              style="font-size: 12.5px;"
+            />
+          </div>
+          <button type="button" class="btn btn-primary" style="width: 100%; padding: 6px;" onclick="saveGoogleClientId()">
+            Lưu cấu hình
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MÀN HÌNH CHÍNH SAU KHI ĐĂNG NHẬP -->
+    <div id="appView" class="hidden">
+      <section id="studentFormCard" class="panel hidden">
+        <div class="panel-header">
+          <h2 class="panel-title">Đăng ký cấp Giấy xác nhận sinh viên</h2>
+        </div>
+        <div class="panel-body">
+          <form onsubmit="handleSubmitRequest(event)">
+            <div class="grid-3">
+              <div class="form-group">
+                <label for="reqStudentName">Họ và tên sinh viên</label>
+                <input type="text" id="reqStudentName" required />
+              </div>
+              <div class="form-group">
+                <label for="reqStudentCode">Mã số sinh viên</label>
+                <input type="text" id="reqStudentCode" required />
+              </div>
+              <div class="form-group">
+                <label for="reqFaculty">Đơn vị / Khoa đào tạo</label>
+                <input
+                  type="text"
+                  id="reqFaculty"
+                  value="Khoa Công nghệ Thông tin - Trường ĐH Công nghệ"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label for="reqStudentEmail">Email nhận giấy xác nhận (Bản mềm)</label>
+                <input
+                  type="email"
+                  id="reqStudentEmail"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="reqCopyType">Hình thức nhận giấy</label>
+                <select id="reqCopyType">
+                  <option value="SOFT">Bản mềm (Gửi tệp PDF qua email sau khi phê duyệt)</option>
+                  <option value="HARD">Bản cứng (Nhận trực tiếp tại Phòng CT&amp;CTHSSV theo lịch hẹn)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="reqReason">Lý do / Mục đích xin xác nhận</label>
+              <input
+                type="text"
+                id="reqReason"
+                placeholder="Ví dụ: Bổ sung hồ sơ thực tập / Xin học bổng / Thủ tục tạm hoãn nghĩa vụ quân sự..."
+                value="Bổ sung hồ sơ thực tập tại doanh nghiệp"
+                required
+              />
+            </div>
+
+            <div>
+              <button type="submit" id="btnSubmitReq" class="btn btn-primary">
+                Gửi yêu cầu xác nhận
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2 id="listTitle" class="panel-title">Danh sách hồ sơ yêu cầu</h2>
+          <button type="button" onclick="loadRequests()" class="btn btn-secondary" style="padding: 5px 12px; font-size: 13px;">
+            Tải lại danh sách
+          </button>
+        </div>
+        <div class="panel-body" style="padding: 0;">
+          <div id="requestsContainer"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    let authToken = localStorage.getItem('vnu_token') || null;
+    let currentUser = JSON.parse(localStorage.getItem('vnu_user') || 'null');
+    let activeGoogleClientId = localStorage.getItem('vnu_google_client_id') || '';
+
+    function showAlert(message, type = 'success') {
+      const box = document.getElementById('alertBox');
+      box.className = 'notice-bar ' + (type === 'error' ? 'notice-error' : 'notice-success');
+      box.innerHTML = message;
+      box.style.display = 'block';
+      setTimeout(() => {
+        box.style.display = 'none';
+      }, 9000);
+    }
+
+    function toggleOAuthConfigBox() {
+      const box = document.getElementById('oauthConfigBox');
+      box.classList.toggle('hidden');
+      if (!box.classList.contains('hidden')) {
+        document.getElementById('inputGoogleClientId').focus();
+      }
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const username = document.getElementById('loginUsername').value;
+      const password = document.getElementById('loginPassword').value;
+
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          return showAlert(data.error || 'Đăng nhập không thành công.', 'error');
+        }
+
+        authToken = data.token;
+        currentUser = data.user;
+        localStorage.setItem('vnu_token', authToken);
+        localStorage.setItem('vnu_user', JSON.stringify(currentUser));
+        renderAppView();
+      } catch (err) {
+        showAlert('Không thể kết nối máy chủ: ' + err.message, 'error');
+      }
+    }
+
+    async function initGoogleOAuthConfig() {
+      try {
+        const res = await fetch('/api/auth/config');
+        const data = await res.json();
+        if (data.googleClientId) {
+          activeGoogleClientId = data.googleClientId;
+          localStorage.setItem('vnu_google_client_id', activeGoogleClientId);
+        }
+        document.getElementById('inputGoogleClientId').value = activeGoogleClientId || '';
+
+        if (activeGoogleClientId) {
+          renderOfficialGoogleButton(activeGoogleClientId);
+        }
+      } catch (e) {}
+    }
+
+    async function saveGoogleClientId() {
+      const clientId = document.getElementById('inputGoogleClientId').value.trim();
+
+      if (!clientId) {
+        return showAlert('Vui lòng nhập Google OAuth Client ID (có đuôi .apps.googleusercontent.com).', 'error');
+      }
+
+      try {
+        const res = await fetch('/api/auth/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ googleClientId: clientId, restrictVnuOnly: false })
+        });
+        const data = await res.json();
+        activeGoogleClientId = data.googleClientId;
+        localStorage.setItem('vnu_google_client_id', activeGoogleClientId);
+        document.getElementById('oauthConfigBox').classList.add('hidden');
+        renderOfficialGoogleButton(activeGoogleClientId);
+        showAlert('Đã lưu Google Client ID. Sinh viên có thể đăng nhập bằng Google.');
+      } catch (err) {
+        showAlert('Lỗi lưu cấu hình: ' + err.message, 'error');
+      }
+    }
+
+    function renderOfficialGoogleButton(clientId) {
+      if (!window.google || !window.google.accounts || !clientId) {
+        setTimeout(() => renderOfficialGoogleButton(clientId), 400);
+        return;
+      }
+
+      const container = document.getElementById('googleButtonContainer');
+      container.innerHTML = '';
+
+      window.google.accounts.id.initialize({
+        client_id: clientId,
+        callback: handleGoogleCredentialResponse,
+        auto_select: false
+      });
+
+      window.google.accounts.id.renderButton(container, {
+        theme: 'outline',
+        size: 'large',
+        width: 354,
+        text: 'signin_with',
+        locale: 'vi'
+      });
+
+      document.getElementById('btnCustomGoogleOAuth').classList.add('hidden');
+    }
+
+    function triggerRealGooglePopup() {
+      if (!activeGoogleClientId) {
+        document.getElementById('oauthConfigBox').classList.remove('hidden');
+        document.getElementById('inputGoogleClientId').focus();
+        showAlert(
+          'Vui lòng dán Google OAuth 2.0 Client ID vào ô thiết lập bên dưới để kích hoạt đăng nhập Google cho sinh viên.',
+          'error'
+        );
+        return;
+      }
+
+      if (!window.google || !window.google.accounts || !window.google.accounts.oauth2) {
+        return showAlert('Đang tải thư viện Google Identity Services, vui lòng thử lại.', 'error');
+      }
+
+      const tokenClient = window.google.accounts.oauth2.initTokenClient({
+        client_id: activeGoogleClientId,
+        scope: 'openid email profile',
+        callback: async (tokenResponse) => {
+          if (tokenResponse && tokenResponse.access_token) {
+            await verifyGoogleWithBackend({
+              accessToken: tokenResponse.access_token,
+              clientId: activeGoogleClientId
+            });
+          }
+        }
+      });
+
+      tokenClient.requestAccessToken({ prompt: 'select_account' });
+    }
+
+    async function handleGoogleCredentialResponse(response) {
+      if (!response || !response.credential) return;
+      await verifyGoogleWithBackend({
+        credential: response.credential,
+        clientId: activeGoogleClientId
+      });
+    }
+
+    async function verifyGoogleWithBackend(payload) {
+      try {
+        const res = await fetch('/api/auth/google', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          return showAlert(data.error || 'Xác thực Google thất bại.', 'error');
+        }
+
+        authToken = data.token;
+        currentUser = data.user;
+        localStorage.setItem('vnu_token', authToken);
+        localStorage.setItem('vnu_user', JSON.stringify(currentUser));
+        renderAppView();
+      } catch (err) {
+        showAlert('Lỗi xác thực Google: ' + err.message, 'error');
+      }
+    }
+
+    function logout() {
+      authToken = null;
+      currentUser = null;
+      localStorage.removeItem('vnu_token');
+      localStorage.removeItem('vnu_user');
+      document.getElementById('loginView').classList.remove('hidden');
+      document.getElementById('appView').classList.add('hidden');
+      document.getElementById('userToolbar').classList.add('hidden');
+    }
+
+    function renderAppView() {
+      if (!authToken || !currentUser) return;
+
+      document.getElementById('loginView').classList.add('hidden');
+      document.getElementById('appView').classList.remove('hidden');
+      document.getElementById('userToolbar').classList.remove('hidden');
+
+      const label =
+        currentUser.role === 'ADMIN'
+          ? `${currentUser.fullName} (${currentUser.username})`
+          : `Sinh viên: ${currentUser.fullName} (${currentUser.username})`;
+      document.getElementById('currentUserLabel').textContent = label;
+
+      const studentFormCard = document.getElementById('studentFormCard');
+      const listTitle = document.getElementById('listTitle');
+
+      if (currentUser.role === 'STUDENT') {
+        studentFormCard.classList.remove('hidden');
+        document.getElementById('reqStudentName').value = currentUser.fullName || '';
+        document.getElementById('reqStudentCode').value = currentUser.studentCode || '22028115';
+        document.getElementById('reqStudentEmail').value = currentUser.defaultEmail || currentUser.username || '';
+        if (currentUser.faculty) {
+          document.getElementById('reqFaculty').value = currentUser.faculty;
+        }
+        listTitle.textContent = 'Lịch sử yêu cầu cấp giấy xác nhận';
+      } else {
+        studentFormCard.classList.add('hidden');
+        listTitle.textContent = 'Danh sách hồ sơ đề nghị cấp Giấy xác nhận sinh viên';
+      }
+
+      loadRequests();
+    }
+
+    async function handleSubmitRequest(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSubmitReq');
+      btn.disabled = true;
+      btn.textContent = 'Đang gửi hồ sơ...';
+
+      try {
+        const payload = {
+          studentName: document.getElementById('reqStudentName').value,
+          studentCode: document.getElementById('reqStudentCode').value,
+          faculty: document.getElementById('reqFaculty').value,
+          studentEmail: document.getElementById('reqStudentEmail').value,
+          copyType: document.getElementById('reqCopyType').value,
+          reason: document.getElementById('reqReason').value
+        };
+
+        const res = await fetch('/api/requests', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + authToken
+          },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          showAlert(data.error || 'Không thể gửi yêu cầu.', 'error');
+        } else {
+          showAlert(`${data.message} Mã hồ sơ: <strong>${data.request.id}</strong>`);
+          loadRequests();
+        }
+      } catch (err) {
+        showAlert('Lỗi: ' + err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Gửi yêu cầu xác nhận';
+      }
+    }
+
+    function formatStatusLabel(status) {
+      switch (status) {
+        case 'PENDING_VERIFY':
+          return 'Chờ xác nhận';
+        case 'COMPLETED_SOFT_SENT':
+          return 'Đã cấp bản mềm qua Email';
+        case 'COMPLETED_HARD_SCHEDULED':
+          return 'Đã duyệt - Hẹn nhận bản cứng';
+        case 'REJECTED':
+          return 'Từ chối';
+        default:
+          return status;
+      }
+    }
+
+    function getDefaultTomorrowDateTime() {
+      const d = new Date(Date.now() + 24 * 3600 * 1000);
+      d.setHours(9, 0, 0, 0);
+      const pad = (n) => String(n).padStart(2, '0');
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T09:00`;
+    }
+
+    async function loadRequests() {
+      const container = document.getElementById('requestsContainer');
+      container.innerHTML = '<div style="padding: 20px; color: #6b7280;">Đang tải dữ liệu hồ sơ...</div>';
+
+      try {
+        const res = await fetch('/api/requests', {
+          headers: { Authorization: 'Bearer ' + authToken }
+        });
+        if (res.status === 401) {
+          logout();
+          return;
+        }
+        const data = await res.json();
+        const list = data.requests || [];
+
+        if (list.length === 0) {
+          container.innerHTML =
+            '<div style="padding: 28px; text-align: center; color: #6b7280;">Chưa có hồ sơ yêu cầu nào trên hệ thống.</div>';
+          return;
+        }
+
+        const defaultDt = getDefaultTomorrowDateTime();
+
+        const rowsHtml = list
+          .map((item) => {
+            const isSoft = item.copyType === 'SOFT';
+            const canAdminVerify = currentUser.role === 'ADMIN' && item.status === 'PENDING_VERIFY';
+            const createdDate = new Date(item.createdAt).toLocaleString('vi-VN');
+
+            let resultDetailsHtml = '';
+            if (item.status === 'COMPLETED_HARD_SCHEDULED') {
+              resultDetailsHtml = `
+                <div style="margin-top: 6px; font-size: 13px; color: #075985;">
+                  <div><strong>Thời gian hẹn nhận:</strong> ${item.appointmentDate}</div>
+                  <div><strong>Địa điểm:</strong> ${item.pickupLocation}</div>
+                  ${item.adminNote ? `<div><strong>Ghi chú:</strong> ${item.adminNote}</div>` : ''}
+                </div>
+              `;
+            } else if (item.status === 'COMPLETED_SOFT_SENT') {
+              resultDetailsHtml = `
+                <div style="margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap;">
+                  <a href="/api/requests/${item.id}/pdf" target="_blank" class="btn btn-primary" style="padding: 5px 10px; font-size: 12.5px;">
+                    Xem / Tải bản PDF
+                  </a>
+                  ${
+                    item.emailResult && item.emailResult.previewUrl
+                      ? `<a href="${item.emailResult.previewUrl}" target="_blank" class="btn btn-secondary" style="padding: 5px 10px; font-size: 12.5px;">
+                          Xem bản sao email đã gửi
+                        </a>`
+                      : ''
+                  }
+                </div>
+              `;
+            } else if (item.status === 'REJECTED' && item.adminNote) {
+              resultDetailsHtml = `<div style="margin-top: 6px; font-size: 12.5px; color: #991b1b;">Lý do: ${item.adminNote}</div>`;
+            }
+
+            let adminActionHtml = '';
+            if (canAdminVerify) {
+              adminActionHtml = `
+                <div class="admin-review-panel">
+                  <div style="font-weight: 600; margin-bottom: 10px; font-size: 13px;">
+                    Xác nhận hồ sơ sinh viên
+                  </div>
+                  ${
+                    !isSoft
+                      ? `
+                      <div class="grid-2">
+                        <div class="form-group" style="margin-bottom: 10px;">
+                          <label>Ngày và giờ hẹn trả bản cứng</label>
+                          <input type="datetime-local" id="appoint_${item.id}" value="${defaultDt}" required />
+                        </div>
+                        <div class="form-group" style="margin-bottom: 10px;">
+                          <label>Địa điểm nhận</label>
+                          <input type="text" id="loc_${item.id}" value="Phòng 104 - Nhà E3, 144 Xuân Thủy, Cầu Giấy" />
+                        </div>
+                      </div>
+                      `
+                      : ''
+                  }
+                  <div class="form-group" style="margin-bottom: 10px;">
+                    <label>Ghi chú / Ý kiến phê duyệt</label>
+                    <input type="text" id="note_${item.id}" value="Đã đối chiếu thông tin sinh viên hợp lệ" />
+                  </div>
+                  <div style="display: flex; gap: 8px;">
+                    <button type="button" onclick="adminVerify('${item.id}', true, '${item.copyType}')" id="btnApprove_${item.id}" class="btn btn-primary" style="padding: 6px 14px; font-size: 13px;">
+                      ${isSoft ? 'Xác nhận và gửi bản mềm qua Email' : 'Xác nhận và lưu lịch hẹn bản cứng'}
+                    </button>
+                    <button type="button" onclick="adminVerify('${item.id}', false, '${item.copyType}')" class="btn btn-danger" style="padding: 6px 14px; font-size: 13px;">
+                      Từ chối
+                    </button>
+                  </div>
+                </div>
+              `;
+            }
+
+            return `
+              <tr>
+                <td style="white-space: nowrap; font-weight: 600;">
+                  ${item.id}
+                  <div style="font-size: 12px; color: #6b7280; font-weight: normal; margin-top: 2px;">${createdDate}</div>
+                </td>
+                <td>
+                  <div style="font-weight: 600;">${item.studentName}</div>
+                  <div style="font-size: 12.5px; color: #4b5563;">MSSV: ${item.studentCode}</div>
+                  <div style="font-size: 12.5px; color: #4b5563;">Email: ${item.studentEmail}</div>
+                </td>
+                <td>
+                  <div>${item.reason}</div>
+                  <div style="font-size: 12.5px; color: #4b5563; margin-top: 2px;">
+                    Hình thức: <strong>${isSoft ? 'Bản mềm (Gửi Email)' : 'Bản cứng (Nhận tại trường)'}</strong>
+                  </div>
+                  ${adminActionHtml}
+                </td>
+                <td>
+                  <span class="status-text st-${item.status}">
+                    ${formatStatusLabel(item.status)}
+                  </span>
+                  ${resultDetailsHtml}
+                </td>
+              </tr>
+            `;
+          })
+          .join('');
+
+        container.innerHTML = `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 140px;">Mã hồ sơ</th>
+                <th style="width: 240px;">Thông tin sinh viên</th>
+                <th>Nội dung yêu cầu &amp; Xử lý</th>
+                <th style="width: 240px;">Trạng thái &amp; Kết quả</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rowsHtml}
+            </tbody>
+          </table>
+        `;
+      } catch (err) {
+        container.innerHTML = '<div style="padding: 20px; color: #991b1b;">Lỗi tải danh sách: ' + err.message + '</div>';
+      }
+    }
+
+    async function adminVerify(requestId, approved, copyType) {
+      const btn = document.getElementById('btnApprove_' + requestId);
+      let appointmentDate = null;
+      let pickupLocation = null;
+
+      if (approved && copyType === 'HARD') {
+        const rawDt = document.getElementById('appoint_' + requestId).value;
+        if (!rawDt) {
+          return showAlert('Vui lòng chọn thời gian hẹn nhận bản cứng.', 'error');
+        }
+        appointmentDate = rawDt.replace('T', ', ');
+        pickupLocation = document.getElementById('loc_' + requestId).value;
+      }
+
+      const adminNote = document.getElementById('note_' + requestId).value;
+
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Đang xử lý...';
+      }
+
+      try {
+        const res = await fetch(`/api/requests/${requestId}/verify`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + authToken
+          },
+          body: JSON.stringify({
+            approved,
+            appointmentDate,
+            pickupLocation,
+            adminNote
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          showAlert(data.error || 'Lỗi xử lý hồ sơ.', 'error');
+        } else {
+          let extraLink = '';
+          if (data.request?.emailResult?.previewUrl) {
+            extraLink = ` <a href="${data.request.emailResult.previewUrl}" target="_blank" style="font-weight:600; color:#065f46; text-decoration:underline;">Xem email đã gửi</a>`;
+          }
+          showAlert(data.message + extraLink);
+          loadRequests();
+        }
+      } catch (err) {
+        showAlert('Lỗi: ' + err.message, 'error');
+      } finally {
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    initGoogleOAuthConfig();
+    if (authToken && currentUser) {
+      renderAppView();
+    }
+  </script>
+</body>
+</html>

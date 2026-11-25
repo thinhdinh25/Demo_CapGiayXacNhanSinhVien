@@ -1,0 +1,19 @@
+{
+  "name": "Camunda 8 - Web Cấp Giấy Xác Nhận Sinh Viên",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-20-bullseye",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "forwardPorts": [3000, 26500],
+  "portsAttributes": {
+    "3000": {
+      "label": "Web Cấp Giấy Xác Nhận Sinh Viên (Public)",
+      "onAutoForward": "openPreview",
+      "visibility": "public"
+    },
+    "26500": {
+      "label": "Camunda 8 Zeebe gRPC Gateway"
+    }
+  },
+  "postCreateCommand": "npm install"
+}

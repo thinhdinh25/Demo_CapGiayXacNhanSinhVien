@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:zeebe="http://camunda.org/schema/zeebe/1.0"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_CapGiayXacNhan"
+                  targetNamespace="http://bpmn.io/schema/bpmn"
+                  exporter="Camunda Modeler"
+                  exporterVersion="5.25.0">
+  <bpmn:process id="student_certificate_process" name="Quy trình cấp giấy xác nhận sinh viên (Camunda 8)" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_RequestSubmitted" name="Sinh viên gửi yêu cầu">
+      <bpmn:outgoing>Flow_Start_To_Verify</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:serviceTask id="Task_AdminVerify" name="Admin xác minh &amp; duyệt yêu cầu">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="admin-verify-certificate" retries="3" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Start_To_Verify</bpmn:incoming>
+      <bpmn:outgoing>Flow_Verify_To_GatewayApproved</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:exclusiveGateway id="Gateway_IsApproved" name="Kết quả duyệt?">
+      <bpmn:incoming>Flow_Verify_To_GatewayApproved</bpmn:incoming>
+      <bpmn:outgoing>Flow_Approved_Yes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Approved_No</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:exclusiveGateway id="Gateway_CopyType" name="Loại bản cấp?">
+      <bpmn:incoming>Flow_Approved_Yes</bpmn:incoming>
+      <bpmn:outgoing>Flow_Type_Soft</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Type_Hard</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:serviceTask id="Task_SendSoftCopyEmail" name="Tự động tạo PDF &amp; Gửi Email bản mềm">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="send-soft-copy-email" retries="3" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Type_Soft</bpmn:incoming>
+      <bpmn:outgoing>Flow_Soft_To_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:serviceTask id="Task_ScheduleHardCopy" name="Ghi nhận lịch hẹn lấy bản cứng &amp; báo SV">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="schedule-hard-copy" retries="3" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Type_Hard</bpmn:incoming>
+      <bpmn:outgoing>Flow_Hard_To_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:endEvent id="EndEvent_Completed" name="Hoàn tất cấp giấy">
+      <bpmn:incoming>Flow_Soft_To_End</bpmn:incoming>
+      <bpmn:incoming>Flow_Hard_To_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="EndEvent_Rejected" name="Từ chối yêu cầu">
+      <bpmn:incoming>Flow_Approved_No</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Flow_Start_To_Verify" sourceRef="StartEvent_RequestSubmitted" targetRef="Task_AdminVerify" />
+    <bpmn:sequenceFlow id="Flow_Verify_To_GatewayApproved" sourceRef="Task_AdminVerify" targetRef="Gateway_IsApproved" />
+
+    <bpmn:sequenceFlow id="Flow_Approved_Yes" name="Đã duyệt (Verified)" sourceRef="Gateway_IsApproved" targetRef="Gateway_CopyType">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=approved = true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_Approved_No" name="Từ chối" sourceRef="Gateway_IsApproved" targetRef="EndEvent_Rejected">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=approved = false</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_Type_Soft" name="Bản mềm (SOFT)" sourceRef="Gateway_CopyType" targetRef="Task_SendSoftCopyEmail">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=copyType = "SOFT"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_Type_Hard" name="Bản cứng (HARD)" sourceRef="Gateway_CopyType" targetRef="Task_ScheduleHardCopy">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=copyType = "HARD"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_Soft_To_End" sourceRef="Task_SendSoftCopyEmail" targetRef="EndEvent_Completed" />
+    <bpmn:sequenceFlow id="Flow_Hard_To_End" sourceRef="Task_ScheduleHardCopy" targetRef="EndEvent_Completed" />
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="student_certificate_process">
+      <bpmndi:BPMNShape id="StartEvent_RequestSubmitted_di" bpmnElement="StartEvent_RequestSubmitted">
+        <dc:Bounds x="162" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="138" y="225" width="85" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_AdminVerify_di" bpmnElement="Task_AdminVerify">
+        <dc:Bounds x="260" y="160" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_IsApproved_di" bpmnElement="Gateway_IsApproved" isMarkerVisible="true">
+        <dc:Bounds x="455" y="175" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="441" y="151" width="78" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_CopyType_di" bpmnElement="Gateway_CopyType" isMarkerVisible="true">
+        <dc:Bounds x="585" y="175" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="574" y="151" width="72" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SendSoftCopyEmail_di" bpmnElement="Task_SendSoftCopyEmail">
+        <dc:Bounds x="720" y="90" width="140" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ScheduleHardCopy_di" bpmnElement="Task_ScheduleHardCopy">
+        <dc:Bounds x="720" y="240" width="140" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Completed_di" bpmnElement="EndEvent_Completed">
+        <dc:Bounds x="942" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="916" y="225" width="88" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Rejected_di" bpmnElement="EndEvent_Rejected">
+        <dc:Bounds x="462" y="312" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="439" y="355" width="82" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_Start_To_Verify_di" bpmnElement="Flow_Start_To_Verify">
+        <di:waypoint x="198" y="200" />
+        <di:waypoint x="260" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Verify_To_GatewayApproved_di" bpmnElement="Flow_Verify_To_GatewayApproved">
+        <di:waypoint x="390" y="200" />
+        <di:waypoint x="455" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Approved_Yes_di" bpmnElement="Flow_Approved_Yes">
+        <di:waypoint x="505" y="200" />
+        <di:waypoint x="585" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Approved_No_di" bpmnElement="Flow_Approved_No">
+        <di:waypoint x="480" y="225" />
+        <di:waypoint x="480" y="312" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Type_Soft_di" bpmnElement="Flow_Type_Soft">
+        <di:waypoint x="610" y="175" />
+        <di:waypoint x="610" y="130" />
+        <di:waypoint x="720" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Type_Hard_di" bpmnElement="Flow_Type_Hard">
+        <di:waypoint x="610" y="225" />
+        <di:waypoint x="610" y="280" />
+        <di:waypoint x="720" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Soft_To_End_di" bpmnElement="Flow_Soft_To_End">
+        <di:waypoint x="860" y="130" />
+        <di:waypoint x="900" y="130" />
+        <di:waypoint x="900" y="200" />
+        <di:waypoint x="942" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Hard_To_End_di" bpmnElement="Flow_Hard_To_End">
+        <di:waypoint x="860" y="280" />
+        <di:waypoint x="900" y="280" />
+        <di:waypoint x="900" y="200" />
+        <di:waypoint x="942" y="200" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

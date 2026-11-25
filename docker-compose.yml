@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  # Cụm Camunda 8 (Zeebe Broker) chạy nhẹ cho Local hoặc GitHub Codespaces
+  zeebe:
+    image: camunda/zeebe:8.5.0
+    container_name: camunda8-zeebe
+    environment:
+      - ZEEBE_BROKER_GATEWAY_SECURITY_ENABLED=false
+      - ZEEBE_BROKER_EXECUTION_METRICS_EXPORTER_ENABLED=false
+      - JAVA_TOOL_OPTIONS=-Xms512m -Xmx512m
+    ports:
+      - "26500:26500"
+      - "9600:9600"
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 5 bash -c '</dev/tcp/localhost/26500' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # Web ứng dụng Cấp Giấy Xác Nhận Sinh Viên
+  webapp:
+    build: .
+    container_name: student-certificate-web
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - ZEEBE_ADDRESS=zeebe:26500
+      - CAMUNDA_SECURE_CONNECTION=false
+    depends_on:
+      - zeebe
