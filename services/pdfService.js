@@ -1,4 +1,5 @@
 const PDFDocument = require('pdfkit');
+const QRCode = require('qrcode');
 const fs = require('fs');
 const path = require('path');
 
@@ -39,9 +40,34 @@ function getVietnameseFontPaths() {
   return { regular, bold: bold || regular };
 }
 
+function resolvePublicBaseUrl(requestData) {
+  if (requestData && requestData.baseUrl) {
+    return String(requestData.baseUrl).replace(/\/+$/, '');
+  }
+  if (process.env.PUBLIC_BASE_URL) {
+    return String(process.env.PUBLIC_BASE_URL).replace(/\/+$/, '');
+  }
+  if (process.env.RENDER_EXTERNAL_URL) {
+    return String(process.env.RENDER_EXTERNAL_URL).replace(/\/+$/, '');
+  }
+  const port = process.env.PORT || 3000;
+  return `http://localhost:${port}`;
+}
+
 function generateCertificatePDF(requestData) {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     try {
+      const baseUrl = resolvePublicBaseUrl(requestData);
+      const pdfVerifyUrl = `${baseUrl}/api/requests/${requestData.id}/pdf`;
+
+      // Sinh ảnh QR Code dạng PNG Buffer dẫn thẳng tới link PDF xác thực
+      const qrBuffer = await QRCode.toBuffer(pdfVerifyUrl, {
+        type: 'png',
+        width: 110,
+        margin: 1,
+        errorCorrectionLevel: 'M'
+      });
+
       const doc = new PDFDocument({ size: 'A4', margin: 54 });
       const buffers = [];
       doc.on('data', (chunk) => buffers.push(chunk));
@@ -122,7 +148,7 @@ function generateCertificatePDF(requestData) {
         doc.text(`Ghi chú: ${requestData.adminNote}`);
       }
 
-      // 4. Chữ ký của Phòng Công tác Sinh viên
+      // 4. Mã QR tra cứu bản PDF và Chữ ký của Phòng Công tác Sinh viên
       doc.moveDown(2);
       const verifiedDate = requestData.verifiedAt ? new Date(requestData.verifiedAt) : new Date();
       const day = String(verifiedDate.getDate()).padStart(2, '0');
@@ -130,6 +156,22 @@ function generateCertificatePDF(requestData) {
       const year = verifiedDate.getFullYear();
 
       const signY = doc.y;
+
+      // Vẽ QR Code bên góc trái ngang hàng với khu vực chữ ký
+      if (qrBuffer) {
+        doc.image(qrBuffer, 64, signY + 4, { width: 78, height: 78 });
+        setRegular();
+        doc
+          .fillColor('#374151')
+          .fontSize(8.5)
+          .text('Quét mã QR để xem', 54, signY + 85, { width: 98, align: 'center' });
+        doc
+          .fontSize(8.5)
+          .text('bản gốc PDF điện tử', 54, signY + 96, { width: 98, align: 'center' });
+      }
+
+      // Vẽ khối chữ ký bên góc phải
+      doc.fillColor('#000000');
       setRegular();
       doc.fontSize(11).text(`Hà Nội, ngày ${day} tháng ${month} năm ${year}`, 280, signY, {
         width: 260,

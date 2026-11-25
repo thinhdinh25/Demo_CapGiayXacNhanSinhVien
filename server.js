@@ -244,6 +244,11 @@ app.post('/api/requests/:id/verify', authMiddleware, async (req, res) => {
       });
     }
 
+    // Ghi nhận baseUrl thực tế (VD: https://xxxx.onrender.com) để nhúng vào mã QR trên bản PDF
+    const proto = req.headers['x-forwarded-proto'] || req.protocol || 'http';
+    const host = req.headers['x-forwarded-host'] || req.get('host');
+    existing.baseUrl = `${proto}://${host}`;
+
     const updated = await camundaManager.verifyRequestByAdmin(requestId, {
       approved: Boolean(approved),
       appointmentDate,
@@ -279,6 +284,10 @@ app.get('/api/requests/:id/pdf', async (req, res) => {
     if (!reqItem.approved) {
       return res.status(400).send('Hồ sơ chưa được phê duyệt.');
     }
+
+    const proto = req.headers['x-forwarded-proto'] || req.protocol || 'http';
+    const host = req.headers['x-forwarded-host'] || req.get('host');
+    reqItem.baseUrl = `${proto}://${host}`;
 
     const pdfBuffer = await generateCertificatePDF(reqItem);
     res.setHeader('Content-Type', 'application/pdf');
