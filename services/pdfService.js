@@ -42,7 +42,7 @@ function getVietnameseFontPaths() {
 function generateCertificatePDF(requestData) {
   return new Promise((resolve, reject) => {
     try {
-      const doc = new PDFDocument({ size: 'A4', margin: 50 });
+      const doc = new PDFDocument({ size: 'A4', margin: 54 });
       const buffers = [];
       doc.on('data', (chunk) => buffers.push(chunk));
       doc.on('end', () => resolve(Buffer.concat(buffers)));
@@ -59,45 +59,39 @@ function generateCertificatePDF(requestData) {
         else doc.font('Helvetica-Bold');
       };
 
-      // 1. Chèn ảnh Logo UET chính thức (assets/logo-uet.jpg) ở góc trên bên trái
-      const logoPath = path.join(__dirname, '..', 'assets', 'logo-uet.jpg');
-      if (fs.existsSync(logoPath)) {
-        doc.image(logoPath, 46, 40, { width: 54 });
-      }
-
-      // 2. Quốc hiệu & Tiêu ngữ chuẩn văn bản hành chính
+      // 1. Quốc hiệu & Tiêu ngữ chuẩn văn bản hành chính
       setRegular();
       doc.fillColor('#000000');
-      doc.fontSize(10.5).text('ĐẠI HỌC QUỐC GIA HÀ NỘI', 105, 48, { width: 195, align: 'center' });
+      doc.fontSize(11).text('ĐẠI HỌC QUỐC GIA HÀ NỘI', 54, 48, { width: 220, align: 'center' });
       setBold();
-      doc.fontSize(10.5).text('TRƯỜNG ĐẠI HỌC CÔNG NGHỆ', 105, 64, { width: 195, align: 'center' });
+      doc.fontSize(11).text('TRƯỜNG ĐẠI HỌC CÔNG NGHỆ', 54, 64, { width: 220, align: 'center' });
       setRegular();
       doc
-        .moveTo(145, 80)
-        .lineTo(260, 80)
+        .moveTo(105, 80)
+        .lineTo(223, 80)
         .lineWidth(0.7)
         .strokeColor('#000000')
         .stroke();
-      doc.fontSize(10).text(`Số: ${requestData.id}/GXN-CTSV`, 105, 86, { width: 195, align: 'center' });
+      doc.fontSize(10).text(`Số: ${requestData.id}/GXN-CTSV`, 54, 86, { width: 220, align: 'center' });
 
       setBold();
-      doc.fontSize(10.5).text('CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM', 300, 48, { width: 245, align: 'center' });
-      doc.fontSize(11).text('Độc lập - Tự do - Hạnh phúc', 300, 64, { width: 245, align: 'center' });
+      doc.fontSize(11).text('CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM', 280, 48, { width: 260, align: 'center' });
+      doc.fontSize(11).text('Độc lập - Tự do - Hạnh phúc', 280, 64, { width: 260, align: 'center' });
       doc
-        .moveTo(355, 80)
-        .lineTo(490, 80)
+        .moveTo(340, 80)
+        .lineTo(480, 80)
         .lineWidth(0.7)
         .strokeColor('#000000')
         .stroke();
 
-      // 3. Tiêu đề Giấy xác nhận
+      // 2. Tiêu đề Giấy xác nhận
       setBold();
-      doc.fontSize(16).text('GIẤY XÁC NHẬN SINH VIÊN', 50, 140, {
+      doc.fontSize(16).text('GIẤY XÁC NHẬN SINH VIÊN', 54, 140, {
         align: 'center',
-        width: 495
+        width: 487
       });
 
-      // 4. Nội dung xác nhận tiếng Việt có dấu
+      // 3. Nội dung xác nhận tiếng Việt có dấu
       doc.moveDown(1.5);
       setBold();
       doc.fontSize(12).text('Trường Đại học Công nghệ - Đại học Quốc gia Hà Nội xác nhận:', 54, 185);
@@ -128,7 +122,7 @@ function generateCertificatePDF(requestData) {
         doc.text(`Ghi chú: ${requestData.adminNote}`);
       }
 
-      // 5. Chữ ký của Phòng Công tác Sinh viên
+      // 4. Chữ ký của Phòng Công tác Sinh viên
       doc.moveDown(2);
       const verifiedDate = requestData.verifiedAt ? new Date(requestData.verifiedAt) : new Date();
       const day = String(verifiedDate.getDate()).padStart(2, '0');
