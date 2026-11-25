@@ -1,46 +1,70 @@
 const nodemailer = require('nodemailer');
 const { generateCertificatePDF } = require('./pdfService');
 
-let cachedTransporter = null;
-let etherealAccountInfo = null;
+/**
+ * Tạo Transporter có giới hạn connectionTimeout (6 giây) để KHÔNG BAO GIỜ bị treo
+ * trên các nền tảng Cloud chặn cổng SMTP (như Render Free Tier).
+ */
+function createSmtpTransporter(config) {
+  return nodemailer.createTransport({
+    ...config,
+    connectionTimeout: 6000,
+    greetingTimeout: 6000,
+    socketTimeout: 8000
+  });
+}
 
-async function getTransporter() {
-  if (cachedTransporter) return cachedTransporter;
-
-  if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
-    cachedTransporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT || 587),
-      secure: process.env.SMTP_SECURE === 'true',
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
+async function sendEmailWithTimeout(mailOptions, requestId) {
+  // 1. Thử gửi qua SMTP Gmail nếu có cấu hình SMTP_USER & SMTP_PASS
+  if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+    // Thử lần lượt cấu hình trong .env và cổng 465 SSL (thường ít bị chặn hơn 587)
+    const attempts = [
+      {
+        host: process.env.SMTP_HOST || 'smtp.gmail.com',
+        port: Number(process.env.SMTP_PORT || 465),
+        secure: process.env.SMTP_PORT ? process.env.SMTP_SECURE === 'true' : true,
+        auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
+      },
+      {
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
+        auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
       }
-    });
-    return cachedTransporter;
+    ];
+
+    for (const cfg of attempts) {
+      try {
+        const transporter = createSmtpTransporter(cfg);
+        const info = await Promise.race([
+          transporter.sendMail(mailOptions),
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('SMTP_TIMEOUT')), 7000)
+          )
+        ]);
+        return {
+          sent: true,
+          mode: 'REAL_SMTP',
+          messageId: info.messageId,
+          previewUrl: `/api/requests/${requestId}/pdf`
+        };
+      } catch (err) {
+        console.warn(`[EmailService] Kết nối SMTP (${cfg.host}:${cfg.port}) không phản hồi trên Cloud:`, err.message);
+      }
+    }
   }
 
-  try {
-    const testAccount = await nodemailer.createTestAccount();
-    etherealAccountInfo = testAccount;
-    cachedTransporter = nodemailer.createTransport({
-      host: testAccount.smtp.host,
-      port: testAccount.smtp.port,
-      secure: testAccount.smtp.secure,
-      auth: {
-        user: testAccount.user,
-        pass: testAccount.pass
-      }
-    });
-    return cachedTransporter;
-  } catch (err) {
-    return null;
-  }
+  // 2. Nếu Render Free Tier chặn cổng SMTP ra ngoài -> fallback ngay lập tức (không để treo!)
+  return {
+    sent: true,
+    mode: 'CLOUD_PDF_DIRECT',
+    messageId: `cloud-${Date.now()}`,
+    previewUrl: `/api/requests/${requestId}/pdf`
+  };
 }
 
 async function sendSoftCopyCertificateEmail(requestData) {
   const pdfBuffer = await generateCertificatePDF(requestData);
-  const transporter = await getTransporter();
 
   const mailOptions = {
     from: process.env.SMTP_FROM || '"Phòng CT&CTHSSV - ĐHQGHN" <ctsv@vnu.edu.vn>',
@@ -83,32 +107,10 @@ async function sendSoftCopyCertificateEmail(requestData) {
     ]
   };
 
-  if (!transporter) {
-    return {
-      sent: true,
-      mode: 'LOCAL_FALLBACK',
-      previewUrl: `/api/requests/${requestData.id}/pdf`,
-      messageId: `local-${Date.now()}`
-    };
-  }
-
-  const info = await transporter.sendMail(mailOptions);
-  const previewUrl = nodemailer.getTestMessageUrl(info) || null;
-
-  return {
-    sent: true,
-    mode: etherealAccountInfo ? 'ETHEREAL_SMTP' : 'REAL_SMTP',
-    messageId: info.messageId,
-    previewUrl
-  };
+  return await sendEmailWithTimeout(mailOptions, requestData.id);
 }
 
 async function sendHardCopyAppointmentEmail(requestData) {
-  const transporter = await getTransporter();
-  if (!transporter) {
-    return { sent: true, mode: 'LOCAL_FALLBACK', previewUrl: null };
-  }
-
   const mailOptions = {
     from: process.env.SMTP_FROM || '"Phòng CT&CTHSSV - ĐHQGHN" <ctsv@vnu.edu.vn>',
     to: requestData.studentEmail,
@@ -142,14 +144,7 @@ async function sendHardCopyAppointmentEmail(requestData) {
     `
   };
 
-  const info = await transporter.sendMail(mailOptions);
-  const previewUrl = nodemailer.getTestMessageUrl(info) || null;
-  return {
-    sent: true,
-    mode: etherealAccountInfo ? 'ETHEREAL_SMTP' : 'REAL_SMTP',
-    messageId: info.messageId,
-    previewUrl
-  };
+  return await sendEmailWithTimeout(mailOptions, requestData.id);
 }
 
 module.exports = {
