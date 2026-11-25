@@ -430,7 +430,7 @@
           style="width: 100%; padding: 9px;"
           onclick="triggerRealGooglePopup()"
         >
-          Đăng nhập bằng tài khoản Google (Gmail)
+          Đăng nhập bằng Google (@vnu.edu.vn)
         </button>
 
         <button type="button" class="oauth-config-toggle" onclick="toggleOAuthConfigBox()">
@@ -637,6 +637,7 @@
       window.google.accounts.id.initialize({
         client_id: clientId,
         callback: handleGoogleCredentialResponse,
+        hosted_domain: 'vnu.edu.vn',
         auto_select: false
       });
 
@@ -669,6 +670,8 @@
       const tokenClient = window.google.accounts.oauth2.initTokenClient({
         client_id: activeGoogleClientId,
         scope: 'openid email profile',
+        hint: '@vnu.edu.vn',
+        hosted_domain: 'vnu.edu.vn',
         callback: async (tokenResponse) => {
           if (tokenResponse && tokenResponse.access_token) {
             await verifyGoogleWithBackend({

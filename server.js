@@ -143,9 +143,10 @@ app.post('/api/auth/google', async (req, res) => {
     const fullName = googlePayload.name || email.split('@')[0];
     const localPart = email.split('@')[0];
 
-    if (restrictVnuDomainOnly && !email.endsWith('@vnu.edu.vn')) {
+    // Chặn tuyệt đối mọi tài khoản Google không thuộc tên miền @vnu.edu.vn
+    if (!email.endsWith('@vnu.edu.vn')) {
       return res.status(403).json({
-        error: `Tài khoản Google (${email}) không thuộc tên miền @vnu.edu.vn.`
+        error: `Truy cập bị từ chối: Tài khoản ${email} không thuộc tên miền @vnu.edu.vn của Đại học Quốc gia Hà Nội.`
       });
     }
 
