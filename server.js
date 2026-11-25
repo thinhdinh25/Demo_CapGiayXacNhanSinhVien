@@ -20,7 +20,7 @@ const ADMIN_ACCOUNT = {
   username: 'ctsv@vnu.edu.vn',
   password: '123',
   role: 'ADMIN',
-  fullName: 'Phòng Chính trị và Công tác Học sinh Sinh viên',
+  fullName: 'Phòng Công tác Sinh viên',
   defaultEmail: 'ctsv@vnu.edu.vn'
 };
 

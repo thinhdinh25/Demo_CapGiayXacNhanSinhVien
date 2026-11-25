@@ -79,7 +79,7 @@ async function sendEmailUniversal({ to, subject, html, pdfBuffer, filename, requ
       });
 
       const mailOptions = {
-        from: process.env.SMTP_FROM || '"Phòng CT&CTHSSV - ĐHQGHN" <ctsv@vnu.edu.vn>',
+        from: process.env.SMTP_FROM || '"Phòng Công tác Sinh viên - UET" <ctsv@vnu.edu.vn>',
         to,
         subject,
         html,
@@ -119,10 +119,10 @@ async function sendSoftCopyCertificateEmail(requestData) {
 
   const html = `
     <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111827; max-width: 620px; border: 1px solid #d1d5db; padding: 24px;">
-      <p style="margin-top:0; font-weight:bold; color:#005a32;">ĐẠI HỌC QUỐC GIA HÀ NỘI - PHÒNG CHÍNH TRỊ VÀ CÔNG TÁC HSSV</p>
+      <p style="margin-top:0; font-weight:bold; color:#005a32;">TRƯỜNG ĐẠI HỌC CÔNG NGHỆ - PHÒNG CÔNG TÁC SINH VIÊN</p>
       <hr style="border:none; border-top:1px solid #e5e7eb; margin:12px 0;" />
       <p>Kính gửi sinh viên <strong>${requestData.studentName}</strong> (Mã sinh viên: <strong>${requestData.studentCode}</strong>),</p>
-      <p>Yêu cầu cấp Giấy xác nhận sinh viên của bạn đã được Phòng Chính trị và Công tác Học sinh Sinh viên phê duyệt.</p>
+      <p>Yêu cầu cấp Giấy xác nhận sinh viên của bạn đã được Phòng Công tác Sinh viên phê duyệt.</p>
       <table style="width:100%; border-collapse:collapse; margin:14px 0; font-size:14px;">
         <tr>
           <td style="padding:6px 0; color:#4b5563; width:160px;">Mã hồ sơ:</td>
@@ -142,7 +142,7 @@ async function sendSoftCopyCertificateEmail(requestData) {
         </tr>
       </table>
       <p>Vui lòng tải tệp <strong>${filename}</strong> đính kèm trong thư này.</p>
-      <p style="margin-bottom:0; font-size:13px; color:#6b7280;">Trân trọng,<br/>Phòng Chính trị và Công tác Học sinh Sinh viên</p>
+      <p style="margin-bottom:0; font-size:13px; color:#6b7280;">Trân trọng,<br/>Phòng Công tác Sinh viên</p>
     </div>
   `;
 
@@ -159,7 +159,7 @@ async function sendSoftCopyCertificateEmail(requestData) {
 async function sendHardCopyAppointmentEmail(requestData) {
   const html = `
     <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111827; max-width: 620px; border: 1px solid #d1d5db; padding: 24px;">
-      <p style="margin-top:0; font-weight:bold; color:#005a32;">ĐẠI HỌC QUỐC GIA HÀ NỘI - PHÒNG CHÍNH TRỊ VÀ CÔNG TÁC HSSV</p>
+      <p style="margin-top:0; font-weight:bold; color:#005a32;">TRƯỜNG ĐẠI HỌC CÔNG NGHỆ - PHÒNG CÔNG TÁC SINH VIÊN</p>
       <hr style="border:none; border-top:1px solid #e5e7eb; margin:12px 0;" />
       <p>Kính gửi sinh viên <strong>${requestData.studentName}</strong> (Mã sinh viên: <strong>${requestData.studentCode}</strong>),</p>
       <p>Yêu cầu cấp Giấy xác nhận sinh viên (bản cứng) của bạn đã được xác nhận. Đề nghị sinh viên đến nhận theo lịch hẹn sau:</p>
@@ -181,7 +181,7 @@ async function sendHardCopyAppointmentEmail(requestData) {
           <td style="padding:6px 0;">${requestData.adminNote || 'Xuất trình thẻ sinh viên khi đến nhận giấy.'}</td>
         </tr>
       </table>
-      <p style="margin-bottom:0; font-size:13px; color:#6b7280;">Trân trọng,<br/>Phòng Chính trị và Công tác Học sinh Sinh viên</p>
+      <p style="margin-bottom:0; font-size:13px; color:#6b7280;">Trân trọng,<br/>Phòng Công tác Sinh viên</p>
     </div>
   `;
 
