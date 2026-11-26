@@ -352,10 +352,10 @@ app.post('/api/requests', authMiddleware, async (req, res) => {
     if (created.processingMode === 'STP') {
       message =
         created.copyType === 'SOFT'
-          ? `⚡ Xử lý thẳng (STP) thành công! Hệ thống đã tự động đối chiếu CSDL, sinh PDF có mã QR và gửi tới ${created.studentEmail}.`
-          : `⚡ Xử lý thẳng (STP) thành công! Đã gửi bản điện tử PDF qua email và xếp lịch nhận bản cứng vào ${created.appointmentDate}.`;
+          ? `Xử lý thẳng (STP) thành công. Hệ thống đã đối chiếu CSDL, sinh PDF có mã QR và gửi tới ${created.studentEmail}.`
+          : `Xử lý thẳng (STP) thành công. Đã gửi bản điện tử PDF qua email và xếp lịch nhận bản cứng vào ${created.appointmentDate}.`;
     } else if (created.processingMode === 'MANUAL_EXCEPTION') {
-      message = `Hồ sơ thuộc diện ngoại lệ (${created.classificationReason}) — đã chuyển chuyên viên CTSV thẩm định kèm hẹn giờ nhắc hạn SLA.`;
+      message = `Hồ sơ thuộc diện ngoại lệ (${created.classificationReason}), đã chuyển chuyên viên CTSV thẩm định kèm hẹn giờ nhắc hạn SLA.`;
     } else if (created.processingMode === 'AUTO_REJECTED') {
       message = `Hồ sơ không đủ điều kiện cấp tự động: ${created.classificationReason}`;
     }

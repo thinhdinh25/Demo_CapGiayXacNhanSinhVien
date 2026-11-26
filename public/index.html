@@ -323,7 +323,7 @@
     }
 
     .panel-header {
-      padding: 13px 20px;
+      padding: 11px 18px;
       border-bottom: 1px solid var(--border-light);
       background-color: #f8fafc;
       display: flex;
@@ -339,11 +339,11 @@
       margin: 0;
     }
 
-    .panel-body { padding: 18px 20px; }
+    .panel-body { padding: 14px 18px; }
 
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
-    .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; }
 
     @media (max-width: 820px) {
       .grid-2, .grid-3, .grid-4, .kpi-strip { grid-template-columns: 1fr; }
@@ -352,12 +352,12 @@
     .data-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 13.8px;
+      font-size: 13.5px;
     }
 
     .data-table th {
       text-align: left;
-      padding: 10px 12px;
+      padding: 9px 11px;
       background-color: #f8fafc;
       border-bottom: 1px solid var(--border);
       font-weight: 700;
@@ -365,7 +365,7 @@
     }
 
     .data-table td {
-      padding: 12px;
+      padding: 9px 11px;
       border-bottom: 1px solid var(--border-light);
       vertical-align: top;
     }
@@ -434,16 +434,16 @@
 
       <div class="quick-accounts">
         <button type="button" class="quick-btn" onclick="quickLogin('24020313', '123')">
-          🎓 SV Đang học (STP)<br/><span style="font-weight:normal;color:#64748b;">24020313 / 123</span>
+          SV đang học (STP)<br/><span style="font-weight:normal;color:#64748b;">24020313 / 123</span>
         </button>
         <button type="button" class="quick-btn" onclick="quickLogin('23021108', '123')">
-          ⚠️ SV Nợ học phí (Ngoại lệ)<br/><span style="font-weight:normal;color:#64748b;">23021108 / 123</span>
+          SV nợ học phí (Ngoại lệ)<br/><span style="font-weight:normal;color:#64748b;">23021108 / 123</span>
         </button>
         <button type="button" class="quick-btn" onclick="quickLogin('22024019', '123')">
-          ⛔ SV Đang bảo lưu<br/><span style="font-weight:normal;color:#64748b;">22024019 / 123</span>
+          SV đang bảo lưu<br/><span style="font-weight:normal;color:#64748b;">22024019 / 123</span>
         </button>
         <button type="button" class="quick-btn" onclick="quickLogin('ctsv@vnu.edu.vn', '123')">
-          🏛️ Chuyên viên CTSV<br/><span style="font-weight:normal;color:#64748b;">ctsv@vnu.edu.vn / 123</span>
+          Chuyên viên CTSV<br/><span style="font-weight:normal;color:#64748b;">ctsv@vnu.edu.vn / 123</span>
         </button>
       </div>
 
@@ -508,14 +508,14 @@
         <div class="tabs-bar">
           <div style="display:flex;gap:8px;">
             <button type="button" id="tabBtnRequests" class="tab-btn active" onclick="switchAdminTab('requests')">
-              📋 Danh sách Hồ sơ &amp; Duyệt ngoại lệ
+              Danh sách hồ sơ &amp; Duyệt ngoại lệ
             </button>
             <button type="button" id="tabBtnStudents" class="tab-btn" onclick="switchAdminTab('students')">
-              🗄️ Cơ sở dữ liệu Sinh viên (CSDL)
+              Cơ sở dữ liệu sinh viên (CSDL)
             </button>
           </div>
           <div class="sla-bar">
-            <span>⏱️ Hẹn giờ nhắc việc SLA: <strong id="slaCurrentLabel">1 phút</strong></span>
+            <span>Hẹn giờ nhắc việc SLA: <strong id="slaCurrentLabel">1 phút</strong></span>
             <select id="slaPresetSelect" style="width:auto;padding:3px 8px;font-size:12.5px;" onchange="changeSlaPreset(this.value)">
               <option value="10000">Thử nhanh: 10 giây</option>
               <option value="60000" selected>Thử nghiệm: 1 phút</option>
@@ -529,7 +529,7 @@
       <section id="studentFormCard" class="panel hidden">
         <div class="panel-header">
           <h2 class="panel-title">Đăng ký cấp Giấy xác nhận sinh viên</h2>
-          <span style="font-size:13px;color:#065f46;font-weight:600;">⚡ Tự động tra cứu CSDL &amp; xử lý thẳng (STP) cho mục đích thông thường</span>
+          <span style="font-size:13px;color:#065f46;font-weight:600;">Tự động tra cứu CSDL &amp; xử lý thẳng (STP) cho mục đích thông thường</span>
         </div>
         <div class="panel-body">
           <form onsubmit="handleSubmitRequest(event)">
@@ -591,7 +591,7 @@
         <div class="panel-header">
           <h2 id="listTitle" class="panel-title">Danh sách hồ sơ yêu cầu</h2>
           <button type="button" onclick="refreshAll()" class="btn btn-secondary" style="padding: 6px 12px; font-size: 13px;">
-            🔄 Tải lại dữ liệu
+            Tải lại dữ liệu
           </button>
         </div>
         <div class="panel-body" style="padding: 0;">
@@ -846,8 +846,8 @@
 
       const isAdmin = currentUser.role === 'ADMIN';
       document.getElementById('currentUserLabel').textContent = isAdmin
-        ? `🏛️ ${currentUser.fullName} (${currentUser.username})`
-        : `🎓 Sinh viên: ${currentUser.fullName} - MSSV ${currentUser.studentCode}`;
+        ? `${currentUser.fullName} (${currentUser.username})`
+        : `Sinh viên: ${currentUser.fullName} - MSSV ${currentUser.studentCode}`;
 
       document.getElementById('adminStatsStrip').classList.toggle('hidden', !isAdmin);
       document.getElementById('studentFormCard').classList.toggle('hidden', isAdmin);
@@ -936,20 +936,20 @@
 
     function formatStatusLabel(status) {
       switch (status) {
-        case 'PENDING_VERIFY': return '⏳ Chờ chuyên viên duyệt ngoại lệ';
-        case 'COMPLETED_SOFT_SENT': return '✅ Đã cấp (Bản điện tử PDF)';
-        case 'WAITING_HARD_PICKUP': return '📄 Đã cấp PDF - Chờ nhận bản cứng';
-        case 'COMPLETED_HARD_ISSUED': return '✅ Đã cấp (Kèm bản cứng)';
-        case 'REJECTED_INELIGIBLE': return '⛔ Không đủ điều kiện (Tự động)';
-        case 'REJECTED': return '❌ Đã từ chối';
+        case 'PENDING_VERIFY': return 'Chờ chuyên viên duyệt ngoại lệ';
+        case 'COMPLETED_SOFT_SENT': return 'Đã cấp (Bản điện tử PDF)';
+        case 'WAITING_HARD_PICKUP': return 'Đã cấp PDF - Chờ nhận bản cứng';
+        case 'COMPLETED_HARD_ISSUED': return 'Đã cấp (Kèm bản cứng)';
+        case 'REJECTED_INELIGIBLE': return 'Không đủ điều kiện (Tự động)';
+        case 'REJECTED': return 'Đã từ chối';
         default: return status;
       }
     }
 
     function formatModeBadge(mode) {
-      if (mode === 'STP') return '<span class="badge b-stp">⚡ Xử lý thẳng (STP)</span>';
-      if (mode === 'MANUAL_EXCEPTION') return '<span class="badge b-exc">👤 Duyệt ngoại lệ</span>';
-      if (mode === 'AUTO_REJECTED') return '<span class="badge b-autorej">⛔ Từ chối tự động (CSDL)</span>';
+      if (mode === 'STP') return '<span class="badge b-stp">Xử lý thẳng (STP)</span>';
+      if (mode === 'MANUAL_EXCEPTION') return '<span class="badge b-exc">Duyệt ngoại lệ</span>';
+      if (mode === 'AUTO_REJECTED') return '<span class="badge b-autorej">Từ chối tự động (CSDL)</span>';
       return '';
     }
 
@@ -987,7 +987,7 @@
           const createdStr = new Date(item.createdAt).toLocaleString('vi-VN');
 
           const slaBadge = item.slaReminded
-            ? `<div style="margin-top:4px;"><span class="badge b-sla">⏰ Quá hạn SLA - Đã nhắc việc (${item.slaReminderCount} lần)</span>
+            ? `<div style="margin-top:4px;"><span class="badge b-sla">Quá hạn SLA - Đã nhắc việc (${item.slaReminderCount} lần)</span>
                <a href="/api/requests/${item.id}/sla-email-preview" target="_blank" style="font-size:12px;color:#92400e;font-weight:600;text-decoration:underline;display:inline-block;margin-left:4px;">Xem email nhắc SLA</a></div>`
             : '';
 
@@ -996,10 +996,10 @@
             linksHtml += `
               <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">
                 <a href="/api/requests/${item.id}/pdf" target="_blank" class="btn btn-primary" style="padding:5px 10px;font-size:12.5px;">
-                  📄 Xem / Tải Giấy PDF (QR)
+                  Tải Giấy PDF (QR)
                 </a>
                 <a href="/api/requests/${item.id}/email-preview" target="_blank" class="btn btn-secondary" style="padding:5px 10px;font-size:12.5px;">
-                  ✉️ Email cấp giấy
+                  Xem Email cấp giấy
                 </a>
               </div>`;
           } else if (item.approved === false) {
@@ -1007,7 +1007,7 @@
               <div style="margin-top:6px;font-size:12.8px;color:#991b1b;"><strong>Lý do:</strong> ${item.adminNote || item.classificationReason}</div>
               <div style="margin-top:6px;">
                 <a href="/api/requests/${item.id}/email-preview" target="_blank" class="btn btn-secondary" style="padding:4px 9px;font-size:12px;">
-                  ✉️ Xem Email báo từ chối
+                  Xem Email báo từ chối
                 </a>
               </div>`;
           }
@@ -1042,10 +1042,10 @@
                 </div>
                 <div style="display:flex;gap:8px;">
                   <button type="button" class="btn btn-primary" style="padding:6px 12px;font-size:13px;" onclick="adminVerify('${item.id}', true, '${item.copyType}')">
-                    ✓ Duyệt &amp; Sinh PDF tự động
+                    Duyệt &amp; Cấp giấy PDF
                   </button>
                   <button type="button" class="btn btn-danger" style="padding:6px 12px;font-size:13px;" onclick="adminVerify('${item.id}', false, '${item.copyType}')">
-                    ✕ Từ chối &amp; Gửi lý do
+                    Từ chối &amp; Gửi lý do
                   </button>
                 </div>
               </div>`;
@@ -1054,7 +1054,7 @@
               <div class="admin-review-panel" style="background:#eff6ff;border-color:#93c5fd;">
                 <div style="font-size:13px;font-weight:700;color:#1e40af;margin-bottom:6px;">Tác vụ tại quầy: Phát bản cứng đóng dấu đỏ</div>
                 <button type="button" class="btn btn-blue" style="padding:6px 12px;font-size:12.5px;" onclick="confirmHardCopy('${item.id}')">
-                  ✓ Xác nhận đã đối soát thẻ SV &amp; giao bản cứng
+                  Xác nhận đã đối soát thẻ SV &amp; giao bản cứng
                 </button>
               </div>`;
           }

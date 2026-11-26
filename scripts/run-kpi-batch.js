@@ -37,9 +37,7 @@ function statsOf(nums) {
 }
 
 async function runBatch() {
-  console.log('======================================================================');
-  console.log(' CHẠY THỰC NGHIỆM BATCH 40 HỒ SƠ CẤP GIẤY XÁC NHẬN SINH VIÊN (TO-BE)');
-  console.log('======================================================================');
+  console.log('Chạy thực nghiệm batch 40 hồ sơ cấp giấy xác nhận sinh viên (To-Be)...');
 
   await camundaManager.init();
   camundaManager.clearAllRequests();
@@ -459,7 +457,7 @@ async function runBatch() {
 
   fs.writeFileSync(SUMMARY_JSON, JSON.stringify(summary, null, 2), 'utf8');
 
-  console.log('\n================ KẾT QUẢ THỰC NGHIỆM 40 HỒ SƠ ================');
+  console.log('\nKết quả thực nghiệm 40 hồ sơ:');
   console.log(`- Tổng số hồ sơ         : ${summary.totalRequests}`);
   console.log(`- Được cấp              : ${summary.totalApproved} (${((summary.totalApproved / summary.totalRequests) * 100).toFixed(1)}%)`);
   console.log(`  + Bản điện tử (SOFT)  : ${summary.totalSoftCopyIssued}`);
