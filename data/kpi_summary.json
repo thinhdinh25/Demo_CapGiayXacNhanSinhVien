@@ -1,0 +1,280 @@
+{
+  "generatedAt": "2026-11-26T07:05:00.640Z",
+  "engineMode": "CAMUNDA_8_BUILTIN_ENGINE",
+  "totalRequests": 40,
+  "totalApproved": 37,
+  "totalRejected": 3,
+  "totalStp": 32,
+  "totalManualException": 7,
+  "totalAutoRejected": 1,
+  "totalSlaReminded": 3,
+  "totalSoftCopyIssued": 26,
+  "totalHardCopyIssued": 11,
+  "totalElementEvents": 138,
+  "overallLeadTimeMs": {
+    "count": 40,
+    "mean": 490.65,
+    "median": 141.5,
+    "min": 76,
+    "max": 3471
+  },
+  "overallLeadTimeSec": {
+    "count": 40,
+    "mean": 0.49,
+    "median": 0.14,
+    "min": 0.08,
+    "max": 3.47
+  },
+  "byScenario": {
+    "stp": {
+      "count": 32,
+      "approvedCount": 32,
+      "rejectedCount": 0,
+      "remindedCount": 0,
+      "softCount": 23,
+      "hardCount": 9,
+      "leadTimeMs": {
+        "count": 32,
+        "mean": 214.56,
+        "median": 140,
+        "min": 136,
+        "max": 446
+      },
+      "leadTimeSec": {
+        "count": 32,
+        "mean": 0.21,
+        "median": 0.14,
+        "min": 0.14,
+        "max": 0.45
+      }
+    },
+    "duyet_ngoai_le": {
+      "count": 3,
+      "approvedCount": 3,
+      "rejectedCount": 0,
+      "remindedCount": 0,
+      "softCount": 2,
+      "hardCount": 1,
+      "leadTimeMs": {
+        "count": 3,
+        "mean": 1007.67,
+        "median": 1076,
+        "min": 778,
+        "max": 1169
+      },
+      "leadTimeSec": {
+        "count": 3,
+        "mean": 1.01,
+        "median": 1.08,
+        "min": 0.78,
+        "max": 1.17
+      }
+    },
+    "tu_choi": {
+      "count": 2,
+      "approvedCount": 0,
+      "rejectedCount": 2,
+      "remindedCount": 0,
+      "softCount": 2,
+      "hardCount": 0,
+      "leadTimeMs": {
+        "count": 2,
+        "mean": 442.5,
+        "median": 442.5,
+        "min": 76,
+        "max": 809
+      },
+      "leadTimeSec": {
+        "count": 2,
+        "mean": 0.44,
+        "median": 0.44,
+        "min": 0.08,
+        "max": 0.81
+      }
+    },
+    "qua_han_sla": {
+      "count": 3,
+      "approvedCount": 2,
+      "rejectedCount": 1,
+      "remindedCount": 3,
+      "softCount": 2,
+      "hardCount": 1,
+      "leadTimeMs": {
+        "count": 3,
+        "mean": 2950.67,
+        "median": 3008,
+        "min": 2373,
+        "max": 3471
+      },
+      "leadTimeSec": {
+        "count": 3,
+        "mean": 2.95,
+        "median": 3.01,
+        "min": 2.37,
+        "max": 3.47
+      }
+    }
+  },
+  "byElement": {
+    "Task_TraCuu": {
+      "elementId": "Task_TraCuu",
+      "elementName": "Tra cứu MSSV và phân loại",
+      "elementType": "SERVICE_TASK",
+      "runs": 40,
+      "durationMs": {
+        "count": 40,
+        "mean": 29.93,
+        "median": 30,
+        "min": 29,
+        "max": 31
+      },
+      "durationSec": {
+        "count": 40,
+        "mean": 0.03,
+        "median": 0.03,
+        "min": 0.03,
+        "max": 0.03
+      }
+    },
+    "Task_SinhPDF": {
+      "elementId": "Task_SinhPDF",
+      "elementName": "Sinh PDF có QR xác thực",
+      "elementType": "SERVICE_TASK",
+      "runs": 37,
+      "durationMs": {
+        "count": 37,
+        "mean": 69.57,
+        "median": 64,
+        "min": 60,
+        "max": 216
+      },
+      "durationSec": {
+        "count": 37,
+        "mean": 0.07,
+        "median": 0.06,
+        "min": 0.06,
+        "max": 0.22
+      }
+    },
+    "Task_GuiEmail": {
+      "elementId": "Task_GuiEmail",
+      "elementName": "Gửi bản điện tử qua email",
+      "elementType": "SERVICE_TASK",
+      "runs": 37,
+      "durationMs": {
+        "count": 37,
+        "mean": 44.89,
+        "median": 46,
+        "min": 35,
+        "max": 50
+      },
+      "durationSec": {
+        "count": 37,
+        "mean": 0.04,
+        "median": 0.05,
+        "min": 0.04,
+        "max": 0.05
+      }
+    },
+    "Task_PhatBanCung": {
+      "elementId": "Task_PhatBanCung",
+      "elementName": "Phát bản cứng tại phòng CTSV",
+      "elementType": "USER_TASK",
+      "runs": 11,
+      "durationMs": {
+        "count": 11,
+        "mean": 243,
+        "median": 234,
+        "min": 187,
+        "max": 296
+      },
+      "durationSec": {
+        "count": 11,
+        "mean": 0.24,
+        "median": 0.23,
+        "min": 0.19,
+        "max": 0.3
+      }
+    },
+    "Task_DuyetNgoaiLe": {
+      "elementId": "Task_DuyetNgoaiLe",
+      "elementName": "Duyệt ngoại lệ",
+      "elementType": "USER_TASK",
+      "runs": 7,
+      "durationMs": {
+        "count": 7,
+        "mean": 1624.71,
+        "median": 937,
+        "min": 653,
+        "max": 3395
+      },
+      "durationSec": {
+        "count": 7,
+        "mean": 1.62,
+        "median": 0.94,
+        "min": 0.65,
+        "max": 3.4
+      }
+    },
+    "Task_ThongBaoKhongDuDieuKien": {
+      "elementId": "Task_ThongBaoKhongDuDieuKien",
+      "elementName": "Thông báo không đủ điều kiện",
+      "elementType": "SERVICE_TASK",
+      "runs": 1,
+      "durationMs": {
+        "count": 1,
+        "mean": 46,
+        "median": 46,
+        "min": 46,
+        "max": 46
+      },
+      "durationSec": {
+        "count": 1,
+        "mean": 0.05,
+        "median": 0.05,
+        "min": 0.05,
+        "max": 0.05
+      }
+    },
+    "Task_ThongBaoTuChoi": {
+      "elementId": "Task_ThongBaoTuChoi",
+      "elementName": "Thông báo từ chối kèm lý do",
+      "elementType": "SERVICE_TASK",
+      "runs": 2,
+      "durationMs": {
+        "count": 2,
+        "mean": 46,
+        "median": 46,
+        "min": 46,
+        "max": 46
+      },
+      "durationSec": {
+        "count": 2,
+        "mean": 0.05,
+        "median": 0.05,
+        "min": 0.05,
+        "max": 0.05
+      }
+    },
+    "Task_NhacViec": {
+      "elementId": "Task_NhacViec",
+      "elementName": "Nhắc cán bộ, báo trưởng phòng",
+      "elementType": "SERVICE_TASK",
+      "runs": 3,
+      "durationMs": {
+        "count": 3,
+        "mean": 46.33,
+        "median": 47,
+        "min": 45,
+        "max": 47
+      },
+      "durationSec": {
+        "count": 3,
+        "mean": 0.05,
+        "median": 0.05,
+        "min": 0.04,
+        "max": 0.05
+      }
+    }
+  }
+}

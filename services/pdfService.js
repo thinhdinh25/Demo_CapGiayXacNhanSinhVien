@@ -54,16 +54,24 @@ function resolvePublicBaseUrl(requestData) {
   return `http://localhost:${port}`;
 }
 
+function formatDobVi(dobStr) {
+  if (!dobStr) return '14/05/2006';
+  const m = String(dobStr).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (m) return `${m[3]}/${m[2]}/${m[1]}`;
+  return dobStr;
+}
+
 function generateCertificatePDF(requestData) {
   return new Promise(async (resolve, reject) => {
     try {
       const baseUrl = resolvePublicBaseUrl(requestData);
       const pdfVerifyUrl = `${baseUrl}/api/requests/${requestData.id}/pdf`;
+      const certNo = requestData.certificateNo || `${requestData.id}/GXN-ĐHCN`;
+      const verifyCode = requestData.verificationCode || requestData.id.replace('REQ-', 'UET-');
 
-      // Sinh ảnh QR Code dạng PNG Buffer dẫn thẳng tới link PDF xác thực
       const qrBuffer = await QRCode.toBuffer(pdfVerifyUrl, {
         type: 'png',
-        width: 110,
+        width: 116,
         margin: 1,
         errorCorrectionLevel: 'M'
       });
@@ -92,64 +100,54 @@ function generateCertificatePDF(requestData) {
       setBold();
       doc.fontSize(11).text('TRƯỜNG ĐẠI HỌC CÔNG NGHỆ', 54, 64, { width: 220, align: 'center' });
       setRegular();
-      doc
-        .moveTo(105, 80)
-        .lineTo(223, 80)
-        .lineWidth(0.7)
-        .strokeColor('#000000')
-        .stroke();
-      doc.fontSize(10).text(`Số: ${requestData.id}/GXN-CTSV`, 54, 86, { width: 220, align: 'center' });
+      doc.moveTo(105, 80).lineTo(223, 80).lineWidth(0.7).strokeColor('#000000').stroke();
+      doc.fontSize(10).text(`Số: ${certNo}`, 54, 86, { width: 220, align: 'center' });
 
       setBold();
       doc.fontSize(11).text('CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM', 280, 48, { width: 260, align: 'center' });
       doc.fontSize(11).text('Độc lập - Tự do - Hạnh phúc', 280, 64, { width: 260, align: 'center' });
-      doc
-        .moveTo(340, 80)
-        .lineTo(480, 80)
-        .lineWidth(0.7)
-        .strokeColor('#000000')
-        .stroke();
+      doc.moveTo(340, 80).lineTo(480, 80).lineWidth(0.7).strokeColor('#000000').stroke();
 
       // 2. Tiêu đề Giấy xác nhận
       setBold();
-      doc.fontSize(16).text('GIẤY XÁC NHẬN SINH VIÊN', 54, 140, {
+      doc.fontSize(16).text('GIẤY XÁC NHẬN SINH VIÊN', 54, 134, {
         align: 'center',
         width: 487
       });
 
-      // 3. Nội dung xác nhận tiếng Việt có dấu
-      doc.moveDown(1.5);
+      // 3. Nội dung xác nhận đối chiếu từ CSDL đào tạo
       setBold();
-      doc.fontSize(12).text('Trường Đại học Công nghệ - Đại học Quốc gia Hà Nội xác nhận:', 54, 185);
+      doc.fontSize(12).text('Trường Đại học Công nghệ - Đại học Quốc gia Hà Nội xác nhận:', 54, 174);
 
       setRegular();
-      doc.fontSize(12).lineGap(7);
-      doc.text(`Họ và tên sinh viên: ${requestData.studentName}`, 54, 212);
-      doc.text(`Mã số sinh viên: ${requestData.studentCode}`);
+      doc.fontSize(12).lineGap(6);
+      doc.text(`Họ và tên sinh viên: ${requestData.studentName}`, 54, 198);
+      doc.text(`Ngày sinh: ${formatDobVi(requestData.studentDob)}          Mã số sinh viên: ${requestData.studentCode}`);
+      doc.text(`Khóa đào tạo: ${requestData.studentCohort || 'QH-2024-I/CQ'}          Ngành học: ${requestData.studentProgram || 'Công nghệ thông tin'}`);
       doc.text(`Đơn vị đào tạo: ${requestData.faculty || 'Khoa Công nghệ Thông tin - Trường ĐH Công nghệ'}`);
-      doc.text(`Thư điện tử VNU: ${requestData.studentEmail}`);
-      doc.text(`Lý do xin xác nhận: ${requestData.reason}`);
+      doc.text(`Tình trạng học tập: ${requestData.academicStatusLabel || 'Đang học (Hệ chính quy)'}`);
+      doc.text(`Mục đích xác nhận: ${requestData.reason}`);
       doc.text(
-        `Hình thức nhận: ${
+        `Hình thức cấp: ${
           requestData.copyType === 'SOFT'
-            ? 'Bản điện tử gửi qua thư điện tử'
-            : 'Bản cứng nhận trực tiếp tại Phòng Công tác Sinh viên'
+            ? 'Bản điện tử xác thực QR gửi qua thư điện tử'
+            : 'Bản điện tử kèm bản giấy đóng dấu tại Phòng Công tác Sinh viên'
         }`
       );
 
-      doc.moveDown(0.8);
+      doc.moveDown(0.6);
       doc.text(
-        'Hiện đang là sinh viên hệ chính quy đang theo học tại Trường Đại học Công nghệ - Đại học Quốc gia Hà Nội. Giấy xác nhận này có giá trị trong thời hạn 03 tháng kể từ ngày ký.',
+        'Hiện đang là sinh viên hệ chính quy đang theo học tại Trường Đại học Công nghệ - Đại học Quốc gia Hà Nội. Giấy xác nhận này có giá trị trong thời hạn 03 tháng kể từ ngày cấp.',
         { align: 'justify', width: 487 }
       );
 
       if (requestData.adminNote) {
-        doc.moveDown(0.5);
+        doc.moveDown(0.4);
         doc.text(`Ghi chú: ${requestData.adminNote}`);
       }
 
-      // 4. Mã QR tra cứu bản PDF và Chữ ký của Phòng Công tác Sinh viên
-      doc.moveDown(2);
+      // 4. Mã QR tra cứu trực tuyến và Chữ ký xác thực
+      doc.moveDown(1.6);
       const verifiedDate = requestData.verifiedAt ? new Date(requestData.verifiedAt) : new Date();
       const day = String(verifiedDate.getDate()).padStart(2, '0');
       const month = String(verifiedDate.getMonth() + 1).padStart(2, '0');
@@ -157,20 +155,20 @@ function generateCertificatePDF(requestData) {
 
       const signY = doc.y;
 
-      // Vẽ QR Code bên góc trái ngang hàng với khu vực chữ ký
       if (qrBuffer) {
-        doc.image(qrBuffer, 64, signY + 4, { width: 78, height: 78 });
+        doc.image(qrBuffer, 68, signY + 4, { width: 82, height: 82 });
+        setBold();
+        doc
+          .fillColor('#1e3a8a')
+          .fontSize(8.5)
+          .text(`Mã xác thực: ${verifyCode}`, 48, signY + 90, { width: 122, align: 'center' });
         setRegular();
         doc
           .fillColor('#374151')
-          .fontSize(8.5)
-          .text('Quét mã QR để xem', 54, signY + 85, { width: 98, align: 'center' });
-        doc
-          .fontSize(8.5)
-          .text('bản gốc PDF điện tử', 54, signY + 96, { width: 98, align: 'center' });
+          .fontSize(8)
+          .text('Quét mã QR để đối chiếu bản gốc PDF điện tử', 48, signY + 102, { width: 122, align: 'center' });
       }
 
-      // Vẽ khối chữ ký bên góc phải
       doc.fillColor('#000000');
       setRegular();
       doc.fontSize(11).text(`Hà Nội, ngày ${day} tháng ${month} năm ${year}`, 280, signY, {
@@ -189,13 +187,20 @@ function generateCertificatePDF(requestData) {
       doc
         .fillColor('#005a32')
         .fontSize(10)
-        .text('(Đã ký và xác thực điện tử)', 280, signY + 66, { width: 260, align: 'center' });
+        .text(
+          requestData.processingMode === 'STP'
+            ? '(Đã ký & cấp tự động theo quy trình STP)'
+            : '(Đã thẩm định & xác thực điện tử)',
+          280,
+          signY + 66,
+          { width: 260, align: 'center' }
+        );
 
       setBold();
       doc
         .fillColor('#000000')
         .fontSize(11)
-        .text('Phòng Công tác Sinh viên', 280, signY + 86, {
+        .text('Phòng Công tác Sinh viên', 280, signY + 88, {
           width: 260,
           align: 'center'
         });

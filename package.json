@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "deploy-bpmn": "node scripts/deploy-bpmn.js"
+    "deploy-bpmn": "node scripts/deploy-bpmn.js",
+    "kpi-batch": "node scripts/run-kpi-batch.js"
   },
   "dependencies": {
     "@camunda8/sdk": "^8.6.0",

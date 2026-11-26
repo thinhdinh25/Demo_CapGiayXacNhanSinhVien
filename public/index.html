@@ -3,20 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hệ thống Cấp Giấy xác nhận Sinh viên - Đại học Quốc gia Hà Nội</title>
+  <title>Cổng Dịch vụ Cấp Giấy xác nhận Sinh viên - Trường ĐH Công nghệ, ĐHQGHN</title>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     :root {
       --vnu-green: #005a32;
       --vnu-green-dark: #004425;
-      --border: #d1d5db;
-      --border-light: #e5e7eb;
-      --bg-page: #f4f5f7;
+      --uet-blue: #1e40af;
+      --border: #cbd5e1;
+      --border-light: #e2e8f0;
+      --bg-page: #f1f5f9;
       --bg-white: #ffffff;
-      --text-main: #111827;
-      --text-secondary: #4b5563;
-      --text-muted: #6b7280;
-      --danger: #991b1b;
+      --text-main: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+      --danger: #b91c1c;
     }
 
     * {
@@ -28,18 +29,18 @@
       margin: 0;
       background-color: var(--bg-page);
       color: var(--text-main);
-      font-size: 14px;
+      font-size: 14.5px;
       line-height: 1.5;
     }
 
     .site-header {
       background-color: var(--vnu-green);
       color: #ffffff;
-      border-bottom: 3px solid #b4975a;
+      border-bottom: 3px solid #eab308;
     }
 
     .header-inner {
-      max-width: 1120px;
+      max-width: 1180px;
       margin: 0 auto;
       padding: 14px 20px;
       display: flex;
@@ -49,22 +50,16 @@
       gap: 12px;
     }
 
-    .org-title {
-      display: flex;
-      flex-direction: column;
-    }
-
     .org-parent {
-      font-size: 11px;
+      font-size: 11.5px;
       text-transform: uppercase;
       letter-spacing: 0.6px;
       color: #d1fae5;
     }
 
     .org-name {
-      font-size: 17px;
+      font-size: 18px;
       font-weight: 700;
-      letter-spacing: 0.2px;
       margin-top: 2px;
     }
 
@@ -72,113 +67,136 @@
       display: flex;
       align-items: center;
       gap: 14px;
-      font-size: 13px;
+      font-size: 13.5px;
     }
 
     .btn-logout {
-      background: transparent;
+      background: rgba(255,255,255,0.12);
       color: #ffffff;
-      border: 1px solid rgba(255, 255, 255, 0.45);
-      padding: 5px 12px;
-      border-radius: 3px;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      padding: 6px 13px;
+      border-radius: 4px;
       cursor: pointer;
       font-size: 13px;
-    }
-
-    .btn-logout:hover {
-      background: rgba(255, 255, 255, 0.1);
+      font-weight: 600;
     }
 
     .main-container {
-      max-width: 1120px;
-      margin: 28px auto;
+      max-width: 1180px;
+      margin: 24px auto;
       padding: 0 20px;
     }
 
     .notice-bar {
       padding: 12px 16px;
-      border-radius: 3px;
-      margin-bottom: 20px;
-      font-size: 13.5px;
+      border-radius: 5px;
+      margin-bottom: 18px;
+      font-size: 14px;
       display: none;
     }
 
     .notice-success {
       background-color: #ecfdf5;
-      border: 1px solid #a7f3d0;
+      border: 1px solid #6ee7b7;
       color: #065f46;
     }
 
     .notice-error {
       background-color: #fef2f2;
-      border: 1px solid #fecaca;
+      border: 1px solid #fca5a5;
       color: #991b1b;
     }
 
     .login-wrapper {
-      max-width: 420px;
-      margin: 48px auto;
+      max-width: 460px;
+      margin: 36px auto;
       background: var(--bg-white);
       border: 1px solid var(--border);
       border-top: 4px solid var(--vnu-green);
-      border-radius: 3px;
+      border-radius: 6px;
       padding: 28px 32px;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
     }
 
     .login-title {
-      font-size: 18px;
+      font-size: 19px;
       font-weight: 700;
       margin: 0 0 4px 0;
-      color: var(--text-main);
     }
 
     .login-subtitle {
-      font-size: 13px;
+      font-size: 13.5px;
       color: var(--text-secondary);
-      margin: 0 0 20px 0;
+      margin: 0 0 18px 0;
+    }
+
+    .quick-accounts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 16px;
+      background: #f8fafc;
+      padding: 10px;
+      border: 1px dashed var(--border);
+      border-radius: 5px;
+    }
+
+    .quick-btn {
+      font-size: 12.5px;
+      padding: 7px 8px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .quick-btn:hover {
+      border-color: var(--vnu-green);
+      color: var(--vnu-green);
+      background: #f0fdf4;
     }
 
     .form-group {
-      margin-bottom: 15px;
+      margin-bottom: 14px;
     }
 
     label {
       display: block;
-      font-size: 13px;
+      font-size: 13.5px;
       font-weight: 600;
-      color: #374151;
-      margin-bottom: 6px;
+      color: #1e293b;
+      margin-bottom: 5px;
     }
 
     input[type="text"],
     input[type="password"],
     input[type="email"],
+    input[type="number"],
     input[type="datetime-local"],
     select,
     textarea {
       width: 100%;
       padding: 8px 11px;
       border: 1px solid var(--border);
-      border-radius: 3px;
+      border-radius: 4px;
       font-size: 14px;
       color: var(--text-main);
       background-color: #fff;
     }
 
-    input:focus,
-    select:focus,
-    textarea:focus {
+    input:focus, select:focus, textarea:focus {
       outline: none;
       border-color: var(--vnu-green);
     }
 
     .btn {
       display: inline-block;
-      padding: 8px 16px;
+      padding: 8px 15px;
       font-size: 13.5px;
       font-weight: 600;
-      border-radius: 3px;
+      border-radius: 4px;
       border: 1px solid transparent;
       cursor: pointer;
       text-decoration: none;
@@ -190,19 +208,20 @@
       color: #ffffff;
     }
 
-    .btn-primary:hover {
-      background-color: var(--vnu-green-dark);
+    .btn-primary:hover { background-color: var(--vnu-green-dark); }
+
+    .btn-blue {
+      background-color: var(--uet-blue);
+      color: #ffffff;
     }
 
     .btn-secondary {
       background-color: #ffffff;
-      color: #374151;
+      color: #1e293b;
       border-color: var(--border);
     }
 
-    .btn-secondary:hover {
-      background-color: #f9fafb;
-    }
+    .btn-secondary:hover { background-color: #f8fafc; }
 
     .btn-danger {
       background-color: #ffffff;
@@ -210,117 +229,139 @@
       border-color: #fca5a5;
     }
 
-    .btn-danger:hover {
-      background-color: #fef2f2;
-    }
+    .btn-danger:hover { background-color: #fef2f2; }
 
     .divider {
       display: flex;
       align-items: center;
-      margin: 20px 0;
+      margin: 18px 0;
       color: var(--text-muted);
       font-size: 12px;
+      font-weight: 600;
     }
 
-    .divider::before,
-    .divider::after {
+    .divider::before, .divider::after {
       content: "";
       flex: 1;
       border-bottom: 1px solid var(--border-light);
     }
 
-    .divider span {
-      padding: 0 10px;
+    .divider span { padding: 0 10px; }
+
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
     }
 
-    .google-auth-section {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
+    .kpi-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px 15px;
     }
 
-    .oauth-config-toggle {
-      font-size: 12px;
-      color: var(--text-muted);
-      text-decoration: underline;
-      cursor: pointer;
-      background: none;
-      border: none;
-      padding: 0;
-      margin-top: 4px;
-    }
-
-    .oauth-config-box {
-      width: 100%;
-      border: 1px solid var(--border-light);
-      background: #f9fafb;
-      padding: 12px;
-      border-radius: 3px;
-      margin-top: 6px;
+    .kpi-label {
       font-size: 12.5px;
-      text-align: left;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .kpi-val {
+      font-size: 22px;
+      font-weight: 700;
+      margin-top: 3px;
+      color: var(--text-main);
+    }
+
+    .tabs-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      border-bottom: 2px solid var(--border-light);
+      padding-bottom: 8px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      padding: 8px 16px;
+      border-radius: 5px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      color: var(--text-secondary);
+    }
+
+    .tab-btn.active {
+      background: var(--vnu-green);
+      color: #fff;
+      border-color: var(--vnu-green);
+    }
+
+    .sla-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      background: #fffbeb;
+      border: 1px solid #fcd34d;
+      padding: 6px 12px;
+      border-radius: 5px;
+      color: #78350f;
     }
 
     .panel {
       background: var(--bg-white);
       border: 1px solid var(--border);
-      border-radius: 3px;
-      margin-bottom: 24px;
+      border-radius: 6px;
+      margin-bottom: 22px;
     }
 
     .panel-header {
-      padding: 14px 20px;
+      padding: 13px 20px;
       border-bottom: 1px solid var(--border-light);
-      background-color: #fafafa;
+      background-color: #f8fafc;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     .panel-title {
-      font-size: 15px;
+      font-size: 15.5px;
       font-weight: 700;
       margin: 0;
-      color: var(--text-main);
     }
 
-    .panel-body {
-      padding: 20px;
-    }
+    .panel-body { padding: 18px 20px; }
 
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+    .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; }
 
-    .grid-3 {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 16px;
-    }
-
-    @media (max-width: 768px) {
-      .grid-2,
-      .grid-3 {
-        grid-template-columns: 1fr;
-      }
+    @media (max-width: 820px) {
+      .grid-2, .grid-3, .grid-4, .kpi-strip { grid-template-columns: 1fr; }
     }
 
     .data-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 13.5px;
+      font-size: 13.8px;
     }
 
     .data-table th {
       text-align: left;
       padding: 10px 12px;
-      background-color: #f9fafb;
+      background-color: #f8fafc;
       border-bottom: 1px solid var(--border);
-      font-weight: 600;
-      color: #374151;
+      font-weight: 700;
+      color: #1e293b;
     }
 
     .data-table td {
@@ -329,53 +370,52 @@
       vertical-align: top;
     }
 
-    .status-text {
+    .badge {
       display: inline-block;
-      padding: 2px 8px;
+      padding: 3px 8px;
       font-size: 12px;
-      font-weight: 600;
-      border-radius: 2px;
+      font-weight: 700;
+      border-radius: 4px;
+      margin-bottom: 4px;
     }
 
-    .st-PENDING_VERIFY {
-      background-color: #fef3c7;
-      color: #92400e;
-    }
+    .b-stp { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+    .b-exc { background: #ede9fe; color: #5b21b6; border: 1px solid #c4b5fd; }
+    .b-autorej { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+    .b-sla { background: #fef3c7; color: #92400e; border: 1px solid #f59e0b; }
 
-    .st-COMPLETED_SOFT_SENT {
-      background-color: #d1fae5;
-      color: #065f46;
-    }
-
-    .st-COMPLETED_HARD_SCHEDULED {
-      background-color: #e0f2fe;
-      color: #075985;
-    }
-
-    .st-REJECTED {
-      background-color: #fee2f2;
-      color: #991b1b;
-    }
+    .st-PENDING_VERIFY { background-color: #fef3c7; color: #92400e; }
+    .st-COMPLETED_SOFT_SENT { background-color: #dcfce7; color: #166534; }
+    .st-WAITING_HARD_PICKUP { background-color: #e0f2fe; color: #075985; }
+    .st-COMPLETED_HARD_ISSUED { background-color: #d1fae5; color: #065f46; }
+    .st-REJECTED, .st-REJECTED_INELIGIBLE { background-color: #fee2e2; color: #991b1b; }
 
     .admin-review-panel {
       margin-top: 10px;
-      padding: 12px;
-      background-color: #f9fafb;
+      padding: 12px 14px;
+      background-color: #f8fafc;
       border: 1px solid var(--border);
-      border-radius: 3px;
+      border-radius: 5px;
     }
 
-    .hidden {
-      display: none !important;
+    .timeline-box {
+      margin-top: 8px;
+      padding: 8px 10px;
+      background: #f8fafc;
+      border-left: 3px solid #64748b;
+      font-size: 12.5px;
+      color: #334155;
     }
+
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
   <header class="site-header">
     <div class="header-inner">
-      <div class="org-title">
-        <span class="org-parent">Đại học Quốc gia Hà Nội</span>
-        <span class="org-name">HỆ THỐNG DỊCH VỤ HÀNH CHÍNH &amp; XÁC NHẬN SINH VIÊN</span>
+      <div>
+        <div class="org-parent">Đại học Quốc gia Hà Nội - Trường Đại học Công nghệ</div>
+        <div class="org-name">CỔNG DỊCH VỤ CẤP GIẤY XÁC NHẬN SINH VIÊN (CAMUNDA 8 TO-BE)</div>
       </div>
       <div id="userToolbar" class="user-bar hidden">
         <span id="currentUserLabel"></span>
@@ -390,147 +430,227 @@
     <!-- MÀN HÌNH ĐĂNG NHẬP -->
     <div id="loginView" class="login-wrapper">
       <h1 class="login-title">Đăng nhập hệ thống</h1>
-      <p class="login-subtitle">Dành cho cán bộ quản lý và sinh viên</p>
+      <p class="login-subtitle">Tích hợp CSDL đào tạo, xử lý thẳng (STP) &amp; giám sát hạn SLA</p>
 
-      <!-- Thanh input đăng nhập (chỉ dành cho tài khoản ctsv@vnu.edu.vn) -->
+      <div class="quick-accounts">
+        <button type="button" class="quick-btn" onclick="quickLogin('24020313', '123')">
+          🎓 SV Đang học (STP)<br/><span style="font-weight:normal;color:#64748b;">24020313 / 123</span>
+        </button>
+        <button type="button" class="quick-btn" onclick="quickLogin('23021108', '123')">
+          ⚠️ SV Nợ học phí (Ngoại lệ)<br/><span style="font-weight:normal;color:#64748b;">23021108 / 123</span>
+        </button>
+        <button type="button" class="quick-btn" onclick="quickLogin('22024019', '123')">
+          ⛔ SV Đang bảo lưu<br/><span style="font-weight:normal;color:#64748b;">22024019 / 123</span>
+        </button>
+        <button type="button" class="quick-btn" onclick="quickLogin('ctsv@vnu.edu.vn', '123')">
+          🏛️ Chuyên viên CTSV<br/><span style="font-weight:normal;color:#64748b;">ctsv@vnu.edu.vn / 123</span>
+        </button>
+      </div>
+
       <form onsubmit="handleLogin(event)">
         <div class="form-group">
-          <label for="loginUsername">Tài khoản cán bộ</label>
-          <input
-            type="text"
-            id="loginUsername"
-            placeholder="Nhập email cán bộ"
-            required
-          />
+          <label for="loginUsername">Tài khoản (MSSV hoặc Email cán bộ)</label>
+          <input type="text" id="loginUsername" placeholder="VD: 24020313 hoặc ctsv@vnu.edu.vn" required />
         </div>
         <div class="form-group">
           <label for="loginPassword">Mật khẩu</label>
-          <input
-            type="password"
-            id="loginPassword"
-            placeholder="Nhập mật khẩu"
-            required
-          />
+          <input type="password" id="loginPassword" placeholder="Nhập mật khẩu (mặc định: 123)" required />
         </div>
         <button type="submit" class="btn btn-primary" style="width: 100%; padding: 10px;">
           Đăng nhập
         </button>
       </form>
 
-      <div class="divider"><span>DÀNH CHO SINH VIÊN</span></div>
+      <div class="divider"><span>HOẶC ĐĂNG NHẬP SSO GOOGLE</span></div>
 
-      <!-- Khu vực đăng nhập Google dành cho Sinh viên -->
-      <div class="google-auth-section">
-        <div id="googleButtonContainer" style="width: 100%; display: flex; justify-content: center;"></div>
-
-        <button
-          type="button"
-          id="btnCustomGoogleOAuth"
-          class="btn btn-secondary"
-          style="width: 100%; padding: 9px;"
-          onclick="triggerRealGooglePopup()"
-        >
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+        <div id="googleButtonContainer"></div>
+        <button type="button" id="btnCustomGoogleOAuth" class="btn btn-secondary" style="width: 100%;" onclick="triggerRealGooglePopup()">
           Đăng nhập bằng Google (@vnu.edu.vn)
         </button>
-
-        <button type="button" class="oauth-config-toggle" onclick="toggleOAuthConfigBox()">
-          Thiết lập Google OAuth Client ID
+        <button type="button" style="font-size:12px;color:#64748b;background:none;border:none;text-decoration:underline;cursor:pointer;" onclick="toggleOAuthConfigBox()">
+          Cấu hình Google OAuth Client ID
         </button>
-
-        <div id="oauthConfigBox" class="oauth-config-box hidden">
-          <div style="margin-bottom: 8px; color: #374151;">
-            Nhập <strong>Google OAuth 2.0 Client ID</strong> (từ Google Cloud Console &rarr; Credentials &rarr; Web application, thêm <code>http://localhost:3000</code> vào <em>Authorized JavaScript origins</em>):
-          </div>
-          <div class="form-group" style="margin-bottom: 8px;">
-            <input
-              type="text"
-              id="inputGoogleClientId"
-              placeholder="xxxx-xxxx.apps.googleusercontent.com"
-              style="font-size: 12.5px;"
-            />
-          </div>
-          <button type="button" class="btn btn-primary" style="width: 100%; padding: 6px;" onclick="saveGoogleClientId()">
-            Lưu cấu hình
-          </button>
+        <div id="oauthConfigBox" class="hidden" style="width:100%;background:#f8fafc;border:1px solid #e2e8f0;padding:10px;border-radius:4px;font-size:12.5px;">
+          <input type="text" id="inputGoogleClientId" placeholder="xxxx.apps.googleusercontent.com" style="margin-bottom:6px;font-size:12.5px;" />
+          <button type="button" class="btn btn-primary" style="width:100%;padding:6px;" onclick="saveGoogleClientId()">Lưu Client ID</button>
         </div>
       </div>
     </div>
 
-    <!-- MÀN HÌNH CHÍNH SAU KHI ĐĂNG NHẬP -->
+    <!-- MÀN HÌNH CHÍNH -->
     <div id="appView" class="hidden">
+      <!-- Thẻ thống kê KPI cho Admin -->
+      <div id="adminStatsStrip" class="hidden">
+        <div class="kpi-strip">
+          <div class="kpi-card">
+            <div class="kpi-label">Tổng hồ sơ</div>
+            <div class="kpi-val" id="statTotal">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Tự duyệt thẳng (STP)</div>
+            <div class="kpi-val" id="statStp" style="color:#1e40af;">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Chờ duyệt ngoại lệ</div>
+            <div class="kpi-val" id="statPending" style="color:#b45309;">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Nhắc quá hạn SLA</div>
+            <div class="kpi-val" id="statSla" style="color:#b91c1c;">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Đã cấp / Từ chối</div>
+            <div class="kpi-val" id="statOutcome" style="color:#065f46;">0 / 0</div>
+          </div>
+        </div>
+
+        <div class="tabs-bar">
+          <div style="display:flex;gap:8px;">
+            <button type="button" id="tabBtnRequests" class="tab-btn active" onclick="switchAdminTab('requests')">
+              📋 Danh sách Hồ sơ &amp; Duyệt ngoại lệ
+            </button>
+            <button type="button" id="tabBtnStudents" class="tab-btn" onclick="switchAdminTab('students')">
+              🗄️ Cơ sở dữ liệu Sinh viên (CSDL)
+            </button>
+          </div>
+          <div class="sla-bar">
+            <span>⏱️ Hẹn giờ nhắc việc SLA: <strong id="slaCurrentLabel">1 phút</strong></span>
+            <select id="slaPresetSelect" style="width:auto;padding:3px 8px;font-size:12.5px;" onchange="changeSlaPreset(this.value)">
+              <option value="10000">Thử nhanh: 10 giây</option>
+              <option value="60000" selected>Thử nghiệm: 1 phút</option>
+              <option value="14400000">Thiết kế chuẩn: 4 giờ</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- FORM SINH VIÊN NỘP ĐƠN -->
       <section id="studentFormCard" class="panel hidden">
         <div class="panel-header">
           <h2 class="panel-title">Đăng ký cấp Giấy xác nhận sinh viên</h2>
+          <span style="font-size:13px;color:#065f46;font-weight:600;">⚡ Tự động tra cứu CSDL &amp; xử lý thẳng (STP) cho mục đích thông thường</span>
         </div>
         <div class="panel-body">
           <form onsubmit="handleSubmitRequest(event)">
             <div class="grid-3">
               <div class="form-group">
-                <label for="reqStudentName">Họ và tên sinh viên</label>
+                <label for="reqStudentCode">Mã số sinh viên (MSSV)*</label>
+                <input type="text" id="reqStudentCode" onblur="autofillStudentFromDb()" required />
+              </div>
+              <div class="form-group">
+                <label for="reqStudentName">Họ và tên sinh viên*</label>
                 <input type="text" id="reqStudentName" required />
               </div>
               <div class="form-group">
-                <label for="reqStudentCode">Mã số sinh viên</label>
-                <input type="text" id="reqStudentCode" required />
-              </div>
-              <div class="form-group">
-                <label for="reqFaculty">Đơn vị / Khoa đào tạo</label>
-                <input
-                  type="text"
-                  id="reqFaculty"
-                  value="Khoa Công nghệ Thông tin - Trường ĐH Công nghệ"
-                  required
-                />
+                <label for="reqFaculty">Đơn vị / Khoa đào tạo*</label>
+                <input type="text" id="reqFaculty" value="Khoa Công nghệ Thông tin - Trường ĐH Công nghệ" required />
               </div>
             </div>
 
             <div class="grid-2">
               <div class="form-group">
-                <label for="reqStudentEmail">Email nhận giấy xác nhận (Bản mềm)</label>
-                <input
-                  type="email"
-                  id="reqStudentEmail"
-                  required
-                />
+                <label for="reqPurposeCategory">Danh mục mục đích xin xác nhận*</label>
+                <select id="reqPurposeCategory" onchange="syncReasonFromCategory()">
+                  <option value="HOC_BONG">[Tự duyệt STP] Bổ sung hồ sơ xin học bổng / thực tập doanh nghiệp</option>
+                  <option value="VAY_VON">[Tự duyệt STP] Vay vốn ngân hàng chính sách xã hội</option>
+                  <option value="NGHIA_VU_QUAN_SU">[Tự duyệt STP] Tạm hoãn nghĩa vụ quân sự tại địa phương</option>
+                  <option value="VE_UU_DAI">[Tự duyệt STP] Làm vé tàu, vé xe buýt ưu đãi sinh viên</option>
+                  <option value="KHAC">[Duyệt ngoại lệ] Mục đích khác (Cần chuyên viên CTSV xem xét)</option>
+                </select>
               </div>
               <div class="form-group">
-                <label for="reqCopyType">Hình thức nhận giấy</label>
+                <label for="reqCopyType">Hình thức nhận kết quả*</label>
                 <select id="reqCopyType">
-                  <option value="SOFT">Bản mềm (Gửi tệp PDF qua email sau khi phê duyệt)</option>
-                  <option value="HARD">Bản cứng (Nhận trực tiếp tại Phòng Công tác Sinh viên theo lịch hẹn)</option>
+                  <option value="SOFT">Bản mềm điện tử (Nhận PDF có mã QR xác thực qua Email)</option>
+                  <option value="HARD">Kèm bản cứng (Nhận PDF qua Email + nhận giấy đóng dấu tại Phòng CTSV)</option>
                 </select>
               </div>
             </div>
 
-            <div class="form-group">
-              <label for="reqReason">Lý do / Mục đích xin xác nhận</label>
-              <input
-                type="text"
-                id="reqReason"
-                placeholder="Ví dụ: Bổ sung hồ sơ thực tập / Xin học bổng / Thủ tục tạm hoãn nghĩa vụ quân sự..."
-                value="Bổ sung hồ sơ thực tập tại doanh nghiệp"
-                required
-              />
+            <div class="grid-2">
+              <div class="form-group">
+                <label for="reqReason">Chi tiết mục đích / Ghi chú cụ thể*</label>
+                <input type="text" id="reqReason" value="Bổ sung hồ sơ xin học bổng học kỳ I năm học 2026-2027" required />
+              </div>
+              <div class="form-group">
+                <label for="reqStudentEmail">Email nhận kết quả*</label>
+                <input type="email" id="reqStudentEmail" required />
+              </div>
             </div>
 
-            <div>
-              <button type="submit" id="btnSubmitReq" class="btn btn-primary">
-                Gửi yêu cầu xác nhận
-              </button>
-            </div>
+            <button type="submit" id="btnSubmitReq" class="btn btn-primary">
+              Gửi yêu cầu cấp giấy xác nhận
+            </button>
           </form>
         </div>
       </section>
 
-      <section class="panel">
+      <!-- PANEL DANH SÁCH HỒ SƠ -->
+      <section id="requestsPanel" class="panel">
         <div class="panel-header">
           <h2 id="listTitle" class="panel-title">Danh sách hồ sơ yêu cầu</h2>
-          <button type="button" onclick="loadRequests()" class="btn btn-secondary" style="padding: 5px 12px; font-size: 13px;">
-            Tải lại danh sách
+          <button type="button" onclick="refreshAll()" class="btn btn-secondary" style="padding: 6px 12px; font-size: 13px;">
+            🔄 Tải lại dữ liệu
           </button>
         </div>
         <div class="panel-body" style="padding: 0;">
           <div id="requestsContainer"></div>
+        </div>
+      </section>
+
+      <!-- PANEL QUẢN LÝ CSDL SINH VIÊN (CHỈ ADMIN) -->
+      <section id="studentsDbPanel" class="panel hidden">
+        <div class="panel-header">
+          <h2 class="panel-title">Cơ sở dữ liệu Sinh viên phục vụ worker <code>tra-cuu-mssv</code></h2>
+          <span style="font-size:13px;color:#475569;">Đối chiếu tự động tình trạng học tập &amp; công nợ khi sinh viên nộp đơn</span>
+        </div>
+        <div class="panel-body">
+          <form onsubmit="handleSaveStudent(event)" style="background:#f8fafc;border:1px solid #cbd5e1;padding:14px;border-radius:5px;margin-bottom:16px;">
+            <div style="font-weight:700;margin-bottom:10px;font-size:14px;">Thêm mới / Cập nhật bản ghi Sinh viên trong CSDL</div>
+            <div class="grid-4">
+              <div class="form-group">
+                <label>MSSV*</label>
+                <input type="text" id="dbCode" placeholder="VD: 24020313" required />
+              </div>
+              <div class="form-group">
+                <label>Họ và tên*</label>
+                <input type="text" id="dbName" placeholder="Họ và tên sinh viên" required />
+              </div>
+              <div class="form-group">
+                <label>Ngày sinh</label>
+                <input type="text" id="dbDob" value="2006-05-15" />
+              </div>
+              <div class="form-group">
+                <label>Khóa đào tạo</label>
+                <input type="text" id="dbCohort" value="QH-2024-I/CQ" />
+              </div>
+            </div>
+            <div class="grid-3">
+              <div class="form-group">
+                <label>Tình trạng học tập*</label>
+                <select id="dbStatus">
+                  <option value="ACTIVE">Đang học (Hợp lệ)</option>
+                  <option value="ON_LEAVE">Đang bảo lưu (Từ chối tự động)</option>
+                  <option value="DROPPED">Đã thôi học (Từ chối tự động)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Công nợ học phí</label>
+                <select id="dbDebt">
+                  <option value="false">Không nợ học phí (Đủ điều kiện STP)</option>
+                  <option value="true">Đang nợ học phí (Chuyển duyệt ngoại lệ)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Ghi chú học vụ</label>
+                <input type="text" id="dbNote" placeholder="Ghi chú quyết định / công nợ..." />
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Lưu vào CSDL Sinh viên</button>
+          </form>
+
+          <div id="studentsTableContainer"></div>
         </div>
       </section>
     </div>
@@ -540,23 +660,55 @@
     let authToken = localStorage.getItem('vnu_token') || null;
     let currentUser = JSON.parse(localStorage.getItem('vnu_user') || 'null');
     let activeGoogleClientId = localStorage.getItem('vnu_google_client_id') || '';
+    let pollTimer = null;
+
+    const PURPOSE_TEXT_MAP = {
+      HOC_BONG: 'Bổ sung hồ sơ xin học bổng học kỳ I năm học 2026-2027',
+      VAY_VON: 'Vay vốn tín dụng sinh viên tại Ngân hàng Chính sách Xã hội',
+      NGHIA_VU_QUAN_SU: 'Nộp Ban Chỉ huy Quân sự địa phương để tạm hoãn nghĩa vụ quân sự',
+      VE_UU_DAI: 'Đăng ký thẻ vé tháng xe buýt / vé tàu ưu đãi sinh viên',
+      KHAC: 'Khác: Xác nhận hồ sơ xin thị thực trao đổi ngắn hạn ở nước ngoài (cần cán bộ xem xét)'
+    };
 
     function showAlert(message, type = 'success') {
       const box = document.getElementById('alertBox');
       box.className = 'notice-bar ' + (type === 'error' ? 'notice-error' : 'notice-success');
       box.innerHTML = message;
       box.style.display = 'block';
-      setTimeout(() => {
-        box.style.display = 'none';
-      }, 9000);
+      setTimeout(() => { box.style.display = 'none'; }, 10000);
+    }
+
+    function syncReasonFromCategory() {
+      const cat = document.getElementById('reqPurposeCategory').value;
+      if (PURPOSE_TEXT_MAP[cat]) {
+        document.getElementById('reqReason').value = PURPOSE_TEXT_MAP[cat];
+      }
+    }
+
+    async function autofillStudentFromDb() {
+      const code = document.getElementById('reqStudentCode').value.trim();
+      if (!code || !authToken) return;
+      try {
+        const res = await fetch('/api/students/' + encodeURIComponent(code), {
+          headers: { Authorization: 'Bearer ' + authToken }
+        });
+        if (res.ok) {
+          const { student } = await res.json();
+          document.getElementById('reqStudentName').value = student.fullName;
+          document.getElementById('reqFaculty').value = student.faculty;
+          document.getElementById('reqStudentEmail').value = student.email;
+        }
+      } catch (e) {}
+    }
+
+    function quickLogin(u, p) {
+      document.getElementById('loginUsername').value = u;
+      document.getElementById('loginPassword').value = p;
+      document.querySelector('#loginView form').requestSubmit();
     }
 
     function toggleOAuthConfigBox() {
-      const box = document.getElementById('oauthConfigBox');
-      box.classList.toggle('hidden');
-      if (!box.classList.contains('hidden')) {
-        document.getElementById('inputGoogleClientId').focus();
-      }
+      document.getElementById('oauthConfigBox').classList.toggle('hidden');
     }
 
     async function handleLogin(e) {
@@ -571,9 +723,7 @@
           body: JSON.stringify({ username, password })
         });
         const data = await res.json();
-        if (!res.ok) {
-          return showAlert(data.error || 'Đăng nhập không thành công.', 'error');
-        }
+        if (!res.ok) return showAlert(data.error || 'Đăng nhập thất bại.', 'error');
 
         authToken = data.token;
         currentUser = data.user;
@@ -581,7 +731,7 @@
         localStorage.setItem('vnu_user', JSON.stringify(currentUser));
         renderAppView();
       } catch (err) {
-        showAlert('Không thể kết nối máy chủ: ' + err.message, 'error');
+        showAlert('Lỗi kết nối máy chủ: ' + err.message, 'error');
       }
     }
 
@@ -592,10 +742,7 @@
         if (data.googleClientId) {
           activeGoogleClientId = data.googleClientId;
           localStorage.setItem('vnu_google_client_id', activeGoogleClientId);
-        }
-        document.getElementById('inputGoogleClientId').value = activeGoogleClientId || '';
-
-        if (activeGoogleClientId) {
+          document.getElementById('inputGoogleClientId').value = activeGoogleClientId;
           renderOfficialGoogleButton(activeGoogleClientId);
         }
       } catch (e) {}
@@ -603,121 +750,60 @@
 
     async function saveGoogleClientId() {
       const clientId = document.getElementById('inputGoogleClientId').value.trim();
-
-      if (!clientId) {
-        return showAlert('Vui lòng nhập Google OAuth Client ID (có đuôi .apps.googleusercontent.com).', 'error');
-      }
-
-      try {
-        const res = await fetch('/api/auth/config', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ googleClientId: clientId, restrictVnuOnly: false })
-        });
-        const data = await res.json();
-        activeGoogleClientId = data.googleClientId;
-        localStorage.setItem('vnu_google_client_id', activeGoogleClientId);
-        document.getElementById('oauthConfigBox').classList.add('hidden');
-        renderOfficialGoogleButton(activeGoogleClientId);
-        showAlert('Đã lưu Google Client ID. Sinh viên có thể đăng nhập bằng Google.');
-      } catch (err) {
-        showAlert('Lỗi lưu cấu hình: ' + err.message, 'error');
-      }
+      if (!clientId) return showAlert('Vui lòng nhập Google OAuth Client ID.', 'error');
+      const res = await fetch('/api/auth/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ googleClientId: clientId })
+      });
+      const data = await res.json();
+      activeGoogleClientId = data.googleClientId;
+      localStorage.setItem('vnu_google_client_id', activeGoogleClientId);
+      document.getElementById('oauthConfigBox').classList.add('hidden');
+      renderOfficialGoogleButton(activeGoogleClientId);
+      showAlert('Đã lưu Google Client ID.');
     }
 
     function renderOfficialGoogleButton(clientId) {
       if (!window.google || !window.google.accounts || !clientId) {
-        setTimeout(() => renderOfficialGoogleButton(clientId), 400);
+        setTimeout(() => renderOfficialGoogleButton(clientId), 500);
         return;
       }
-
       const container = document.getElementById('googleButtonContainer');
       container.innerHTML = '';
-
       window.google.accounts.id.initialize({
         client_id: clientId,
-        callback: handleGoogleCredentialResponse,
-        hosted_domain: 'vnu.edu.vn',
-        auto_select: false
+        callback: async (resp) => {
+          if (!resp || !resp.credential) return;
+          const r = await fetch('/api/auth/google', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ credential: resp.credential, clientId })
+          });
+          const d = await r.json();
+          if (!r.ok) return showAlert(d.error || 'Xác thực thất bại.', 'error');
+          authToken = d.token;
+          currentUser = d.user;
+          localStorage.setItem('vnu_token', authToken);
+          localStorage.setItem('vnu_user', JSON.stringify(currentUser));
+          renderAppView();
+        }
       });
-
-      window.google.accounts.id.renderButton(container, {
-        theme: 'outline',
-        size: 'large',
-        width: 354,
-        text: 'signin_with',
-        locale: 'vi'
-      });
-
+      window.google.accounts.id.renderButton(container, { theme: 'outline', size: 'large', width: 380, locale: 'vi' });
       document.getElementById('btnCustomGoogleOAuth').classList.add('hidden');
     }
 
     function triggerRealGooglePopup() {
       if (!activeGoogleClientId) {
         document.getElementById('oauthConfigBox').classList.remove('hidden');
-        document.getElementById('inputGoogleClientId').focus();
-        showAlert(
-          'Vui lòng dán Google OAuth 2.0 Client ID vào ô thiết lập bên dưới để kích hoạt đăng nhập Google cho sinh viên.',
-          'error'
-        );
-        return;
-      }
-
-      if (!window.google || !window.google.accounts || !window.google.accounts.oauth2) {
-        return showAlert('Đang tải thư viện Google Identity Services, vui lòng thử lại.', 'error');
-      }
-
-      const tokenClient = window.google.accounts.oauth2.initTokenClient({
-        client_id: activeGoogleClientId,
-        scope: 'openid email profile',
-        hint: '@vnu.edu.vn',
-        hosted_domain: 'vnu.edu.vn',
-        callback: async (tokenResponse) => {
-          if (tokenResponse && tokenResponse.access_token) {
-            await verifyGoogleWithBackend({
-              accessToken: tokenResponse.access_token,
-              clientId: activeGoogleClientId
-            });
-          }
-        }
-      });
-
-      tokenClient.requestAccessToken({ prompt: 'select_account' });
-    }
-
-    async function handleGoogleCredentialResponse(response) {
-      if (!response || !response.credential) return;
-      await verifyGoogleWithBackend({
-        credential: response.credential,
-        clientId: activeGoogleClientId
-      });
-    }
-
-    async function verifyGoogleWithBackend(payload) {
-      try {
-        const res = await fetch('/api/auth/google', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          return showAlert(data.error || 'Xác thực Google thất bại.', 'error');
-        }
-
-        authToken = data.token;
-        currentUser = data.user;
-        localStorage.setItem('vnu_token', authToken);
-        localStorage.setItem('vnu_user', JSON.stringify(currentUser));
-        renderAppView();
-      } catch (err) {
-        showAlert('Lỗi xác thực Google: ' + err.message, 'error');
+        return showAlert('Chưa có Google OAuth Client ID — bạn có thể dán Client ID bên dưới hoặc bấm các nút tài khoản Sinh viên mẫu ở trên để dùng ngay!', 'error');
       }
     }
 
     function logout() {
       authToken = null;
       currentUser = null;
+      if (pollTimer) clearInterval(pollTimer);
       localStorage.removeItem('vnu_token');
       localStorage.removeItem('vnu_user');
       document.getElementById('loginView').classList.remove('hidden');
@@ -725,53 +811,103 @@
       document.getElementById('userToolbar').classList.add('hidden');
     }
 
+    function switchAdminTab(tab) {
+      const isReq = tab === 'requests';
+      document.getElementById('tabBtnRequests').classList.toggle('active', isReq);
+      document.getElementById('tabBtnStudents').classList.toggle('active', !isReq);
+      document.getElementById('requestsPanel').classList.toggle('hidden', !isReq);
+      document.getElementById('studentsDbPanel').classList.toggle('hidden', isReq);
+      if (!isReq) loadStudentsDb();
+    }
+
+    async function changeSlaPreset(msVal) {
+      try {
+        const res = await fetch('/api/sla-config', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + authToken
+          },
+          body: JSON.stringify({ slaTimeoutMs: Number(msVal) })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          document.getElementById('slaCurrentLabel').textContent = data.config.slaLabel;
+          showAlert(data.message);
+        }
+      } catch (e) {}
+    }
+
     function renderAppView() {
       if (!authToken || !currentUser) return;
-
       document.getElementById('loginView').classList.add('hidden');
       document.getElementById('appView').classList.remove('hidden');
       document.getElementById('userToolbar').classList.remove('hidden');
 
-      const label =
-        currentUser.role === 'ADMIN'
-          ? `${currentUser.fullName} (${currentUser.username})`
-          : `Sinh viên: ${currentUser.fullName} (${currentUser.username})`;
-      document.getElementById('currentUserLabel').textContent = label;
+      const isAdmin = currentUser.role === 'ADMIN';
+      document.getElementById('currentUserLabel').textContent = isAdmin
+        ? `🏛️ ${currentUser.fullName} (${currentUser.username})`
+        : `🎓 Sinh viên: ${currentUser.fullName} - MSSV ${currentUser.studentCode}`;
 
-      const studentFormCard = document.getElementById('studentFormCard');
-      const listTitle = document.getElementById('listTitle');
+      document.getElementById('adminStatsStrip').classList.toggle('hidden', !isAdmin);
+      document.getElementById('studentFormCard').classList.toggle('hidden', isAdmin);
+      document.getElementById('studentsDbPanel').classList.add('hidden');
+      document.getElementById('requestsPanel').classList.remove('hidden');
 
-      if (currentUser.role === 'STUDENT') {
-        studentFormCard.classList.remove('hidden');
+      if (!isAdmin) {
         document.getElementById('reqStudentName').value = currentUser.fullName || '';
-        document.getElementById('reqStudentCode').value = currentUser.studentCode || '22028115';
-        document.getElementById('reqStudentEmail').value = currentUser.defaultEmail || currentUser.username || '';
-        if (currentUser.faculty) {
-          document.getElementById('reqFaculty').value = currentUser.faculty;
-        }
-        listTitle.textContent = 'Lịch sử yêu cầu cấp giấy xác nhận';
+        document.getElementById('reqStudentCode').value = currentUser.studentCode || '24020313';
+        document.getElementById('reqStudentEmail').value = currentUser.defaultEmail || '';
+        document.getElementById('reqFaculty').value = currentUser.faculty || '';
+        document.getElementById('listTitle').textContent = 'Lịch sử yêu cầu cấp giấy xác nhận của tôi';
       } else {
-        studentFormCard.classList.add('hidden');
-        listTitle.textContent = 'Danh sách hồ sơ đề nghị cấp Giấy xác nhận sinh viên';
+        document.getElementById('listTitle').textContent = 'Điều phối & Thẩm định hồ sơ cấp Giấy xác nhận sinh viên';
       }
 
-      loadRequests();
+      refreshAll();
+      if (pollTimer) clearInterval(pollTimer);
+      pollTimer = setInterval(refreshAll, 5000);
+    }
+
+    async function refreshAll() {
+      if (!authToken) return;
+      await loadRequests();
+      if (currentUser && currentUser.role === 'ADMIN') {
+        await loadAdminStats();
+      }
+    }
+
+    async function loadAdminStats() {
+      try {
+        const res = await fetch('/api/stats', { headers: { Authorization: 'Bearer ' + authToken } });
+        if (!res.ok) return;
+        const s = await res.json();
+        document.getElementById('statTotal').textContent = s.total;
+        document.getElementById('statStp').textContent = s.stpCount;
+        document.getElementById('statPending').textContent = s.pendingCount;
+        document.getElementById('statSla').textContent = s.slaRemindedCount;
+        document.getElementById('statOutcome').textContent = `${s.approvedCount} / ${s.rejectedCount}`;
+        if (s.slaConfig) {
+          document.getElementById('slaCurrentLabel').textContent = s.slaConfig.slaLabel;
+        }
+      } catch (e) {}
     }
 
     async function handleSubmitRequest(e) {
       e.preventDefault();
       const btn = document.getElementById('btnSubmitReq');
       btn.disabled = true;
-      btn.textContent = 'Đang gửi hồ sơ...';
+      btn.textContent = 'Đang tra cứu CSDL & xử lý...';
 
       try {
         const payload = {
-          studentName: document.getElementById('reqStudentName').value,
           studentCode: document.getElementById('reqStudentCode').value,
+          studentName: document.getElementById('reqStudentName').value,
           faculty: document.getElementById('reqFaculty').value,
-          studentEmail: document.getElementById('reqStudentEmail').value,
+          purposeCategory: document.getElementById('reqPurposeCategory').value,
           copyType: document.getElementById('reqCopyType').value,
-          reason: document.getElementById('reqReason').value
+          reason: document.getElementById('reqReason').value,
+          studentEmail: document.getElementById('reqStudentEmail').value
         };
 
         const res = await fetch('/api/requests', {
@@ -786,241 +922,353 @@
         if (!res.ok) {
           showAlert(data.error || 'Không thể gửi yêu cầu.', 'error');
         } else {
-          showAlert(`${data.message} Mã hồ sơ: <strong>${data.request.id}</strong>`);
-          loadRequests();
+          const isRej = data.request.processingMode === 'AUTO_REJECTED';
+          showAlert(`${data.message} (Mã hồ sơ: <strong>${data.request.id}</strong>)`, isRej ? 'error' : 'success');
+          refreshAll();
         }
       } catch (err) {
         showAlert('Lỗi: ' + err.message, 'error');
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Gửi yêu cầu xác nhận';
+        btn.textContent = 'Gửi yêu cầu cấp giấy xác nhận';
       }
     }
 
     function formatStatusLabel(status) {
       switch (status) {
-        case 'PENDING_VERIFY':
-          return 'Chờ xác nhận';
-        case 'COMPLETED_SOFT_SENT':
-          return 'Đã cấp bản mềm qua Email';
-        case 'COMPLETED_HARD_SCHEDULED':
-          return 'Đã duyệt - Hẹn nhận bản cứng';
-        case 'REJECTED':
-          return 'Từ chối';
-        default:
-          return status;
+        case 'PENDING_VERIFY': return '⏳ Chờ chuyên viên duyệt ngoại lệ';
+        case 'COMPLETED_SOFT_SENT': return '✅ Đã cấp (Bản điện tử PDF)';
+        case 'WAITING_HARD_PICKUP': return '📄 Đã cấp PDF - Chờ nhận bản cứng';
+        case 'COMPLETED_HARD_ISSUED': return '✅ Đã cấp (Kèm bản cứng)';
+        case 'REJECTED_INELIGIBLE': return '⛔ Không đủ điều kiện (Tự động)';
+        case 'REJECTED': return '❌ Đã từ chối';
+        default: return status;
       }
+    }
+
+    function formatModeBadge(mode) {
+      if (mode === 'STP') return '<span class="badge b-stp">⚡ Xử lý thẳng (STP)</span>';
+      if (mode === 'MANUAL_EXCEPTION') return '<span class="badge b-exc">👤 Duyệt ngoại lệ</span>';
+      if (mode === 'AUTO_REJECTED') return '<span class="badge b-autorej">⛔ Từ chối tự động (CSDL)</span>';
+      return '';
     }
 
     function getDefaultTomorrowDateTime() {
       const d = new Date(Date.now() + 24 * 3600 * 1000);
-      d.setHours(9, 0, 0, 0);
       const pad = (n) => String(n).padStart(2, '0');
       return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T09:00`;
     }
 
     async function loadRequests() {
       const container = document.getElementById('requestsContainer');
-      container.innerHTML = '<div style="padding: 20px; color: #6b7280;">Đang tải dữ liệu hồ sơ...</div>';
-
       try {
-        const res = await fetch('/api/requests', {
-          headers: { Authorization: 'Bearer ' + authToken }
-        });
-        if (res.status === 401) {
-          logout();
-          return;
-        }
+        const res = await fetch('/api/requests', { headers: { Authorization: 'Bearer ' + authToken } });
+        if (res.status === 401) return logout();
         const data = await res.json();
-        const list = data.requests || [];
+        const params = new URLSearchParams(window.location.search);
+        const onlyReq = params.get('onlyReq');
+        const expandReq = params.get('expand');
+        let list = data.requests || [];
+        if (onlyReq) {
+          const filtered = list.filter((x) => x.id === onlyReq);
+          if (filtered.length) list = filtered;
+        }
 
         if (list.length === 0) {
-          container.innerHTML =
-            '<div style="padding: 28px; text-align: center; color: #6b7280;">Chưa có hồ sơ yêu cầu nào trên hệ thống.</div>';
+          container.innerHTML = '<div style="padding:28px;text-align:center;color:#64748b;">Chưa có hồ sơ yêu cầu nào trên hệ thống.</div>';
           return;
         }
 
         const defaultDt = getDefaultTomorrowDateTime();
+        const rowsHtml = list.map((item) => {
+          const isAdmin = currentUser.role === 'ADMIN';
+          const canVerify = isAdmin && item.status === 'PENDING_VERIFY';
+          const canIssueHard = isAdmin && item.status === 'WAITING_HARD_PICKUP';
+          const createdStr = new Date(item.createdAt).toLocaleString('vi-VN');
 
-        const rowsHtml = list
-          .map((item) => {
-            const isSoft = item.copyType === 'SOFT';
-            const canAdminVerify = currentUser.role === 'ADMIN' && item.status === 'PENDING_VERIFY';
-            const createdDate = new Date(item.createdAt).toLocaleString('vi-VN');
+          const slaBadge = item.slaReminded
+            ? `<div style="margin-top:4px;"><span class="badge b-sla">⏰ Quá hạn SLA - Đã nhắc việc (${item.slaReminderCount} lần)</span>
+               <a href="/api/requests/${item.id}/sla-email-preview" target="_blank" style="font-size:12px;color:#92400e;font-weight:600;text-decoration:underline;display:inline-block;margin-left:4px;">Xem email nhắc SLA</a></div>`
+            : '';
 
-            let resultDetailsHtml = '';
-            if (item.status === 'COMPLETED_HARD_SCHEDULED') {
-              resultDetailsHtml = `
-                <div style="margin-top: 6px; font-size: 13px; color: #075985;">
-                  <div><strong>Thời gian hẹn nhận:</strong> ${item.appointmentDate}</div>
-                  <div><strong>Địa điểm:</strong> ${item.pickupLocation}</div>
-                  ${item.adminNote ? `<div><strong>Ghi chú:</strong> ${item.adminNote}</div>` : ''}
+          let linksHtml = '';
+          if (item.approved === true) {
+            linksHtml += `
+              <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">
+                <a href="/api/requests/${item.id}/pdf" target="_blank" class="btn btn-primary" style="padding:5px 10px;font-size:12.5px;">
+                  📄 Xem / Tải Giấy PDF (QR)
+                </a>
+                <a href="/api/requests/${item.id}/email-preview" target="_blank" class="btn btn-secondary" style="padding:5px 10px;font-size:12.5px;">
+                  ✉️ Email cấp giấy
+                </a>
+              </div>`;
+          } else if (item.approved === false) {
+            linksHtml += `
+              <div style="margin-top:6px;font-size:12.8px;color:#991b1b;"><strong>Lý do:</strong> ${item.adminNote || item.classificationReason}</div>
+              <div style="margin-top:6px;">
+                <a href="/api/requests/${item.id}/email-preview" target="_blank" class="btn btn-secondary" style="padding:4px 9px;font-size:12px;">
+                  ✉️ Xem Email báo từ chối
+                </a>
+              </div>`;
+          }
+
+          if (item.copyType === 'HARD' && item.appointmentDate) {
+            linksHtml += `<div style="margin-top:6px;font-size:12.5px;color:#075985;">
+              <strong>Lịch nhận bản cứng:</strong> ${item.appointmentDate} (${item.pickupLocation || 'P.104 Nhà E3'})
+            </div>`;
+          }
+
+          let adminPanelHtml = '';
+          if (canVerify) {
+            adminPanelHtml = `
+              <div class="admin-review-panel">
+                <div style="font-weight:700;color:#5b21b6;font-size:13px;margin-bottom:6px;">
+                  Thẩm định hồ sơ ngoại lệ (Tình trạng CSDL: ${item.academicStatusLabel || 'Đang học'})
                 </div>
-              `;
-            } else if (item.status === 'COMPLETED_SOFT_SENT') {
-              resultDetailsHtml = `
-                <div style="margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap;">
-                  <a href="/api/requests/${item.id}/pdf" target="_blank" class="btn btn-primary" style="padding: 5px 10px; font-size: 12.5px;">
-                    Xem / Tải bản PDF
-                  </a>
-                  ${
-                    item.emailResult && item.emailResult.previewUrl
-                      ? `<a href="${item.emailResult.previewUrl}" target="_blank" class="btn btn-secondary" style="padding: 5px 10px; font-size: 12.5px;">
-                          Xem bản sao email đã gửi
-                        </a>`
-                      : ''
-                  }
+                <div style="font-size:12.5px;color:#475569;margin-bottom:8px;">
+                  <strong>Lý do chuyển duyệt tay:</strong> ${item.classificationReason}
                 </div>
-              `;
-            } else if (item.status === 'REJECTED' && item.adminNote) {
-              resultDetailsHtml = `<div style="margin-top: 6px; font-size: 12.5px; color: #991b1b;">Lý do: ${item.adminNote}</div>`;
-            }
-
-            let adminActionHtml = '';
-            if (canAdminVerify) {
-              adminActionHtml = `
-                <div class="admin-review-panel">
-                  <div style="font-weight: 600; margin-bottom: 10px; font-size: 13px;">
-                    Xác nhận hồ sơ sinh viên
-                  </div>
-                  ${
-                    !isSoft
-                      ? `
-                      <div class="grid-2">
-                        <div class="form-group" style="margin-bottom: 10px;">
-                          <label>Ngày và giờ hẹn trả bản cứng</label>
-                          <input type="datetime-local" id="appoint_${item.id}" value="${defaultDt}" required />
-                        </div>
-                        <div class="form-group" style="margin-bottom: 10px;">
-                          <label>Địa điểm nhận</label>
-                          <input type="text" id="loc_${item.id}" value="Phòng 104 - Nhà E3, 144 Xuân Thủy, Cầu Giấy" />
-                        </div>
-                      </div>
-                      `
-                      : ''
-                  }
-                  <div class="form-group" style="margin-bottom: 10px;">
-                    <label>Ghi chú / Ý kiến phê duyệt</label>
-                    <input type="text" id="note_${item.id}" value="Đã đối chiếu thông tin sinh viên hợp lệ" />
-                  </div>
-                  <div style="display: flex; gap: 8px;">
-                    <button type="button" onclick="adminVerify('${item.id}', true, '${item.copyType}')" id="btnApprove_${item.id}" class="btn btn-primary" style="padding: 6px 14px; font-size: 13px;">
-                      ${isSoft ? 'Xác nhận và gửi bản mềm qua Email' : 'Xác nhận và lưu lịch hẹn bản cứng'}
-                    </button>
-                    <button type="button" onclick="adminVerify('${item.id}', false, '${item.copyType}')" class="btn btn-danger" style="padding: 6px 14px; font-size: 13px;">
-                      Từ chối
-                    </button>
-                  </div>
+                ${
+                  item.copyType === 'HARD'
+                    ? `<div class="grid-2" style="margin-bottom:8px;">
+                        <div><label style="font-size:12px;">Lịch hẹn bản cứng</label><input type="datetime-local" id="appoint_${item.id}" value="${defaultDt}" /></div>
+                        <div><label style="font-size:12px;">Địa điểm nhận</label><input type="text" id="loc_${item.id}" value="Phòng 104 - Nhà E3, 144 Xuân Thủy" /></div>
+                      </div>`
+                    : ''
+                }
+                <div style="margin-bottom:8px;">
+                  <label style="font-size:12px;">Ý kiến phê duyệt / Lý do từ chối (bắt buộc khi từ chối)</label>
+                  <input type="text" id="note_${item.id}" placeholder="Nhập ý kiến thẩm định hoặc lý do trả lại..." value="Đã kiểm tra minh chứng hợp lệ, đồng ý cấp giấy" />
                 </div>
-              `;
-            }
+                <div style="display:flex;gap:8px;">
+                  <button type="button" class="btn btn-primary" style="padding:6px 12px;font-size:13px;" onclick="adminVerify('${item.id}', true, '${item.copyType}')">
+                    ✓ Duyệt &amp; Sinh PDF tự động
+                  </button>
+                  <button type="button" class="btn btn-danger" style="padding:6px 12px;font-size:13px;" onclick="adminVerify('${item.id}', false, '${item.copyType}')">
+                    ✕ Từ chối &amp; Gửi lý do
+                  </button>
+                </div>
+              </div>`;
+          } else if (canIssueHard) {
+            adminPanelHtml = `
+              <div class="admin-review-panel" style="background:#eff6ff;border-color:#93c5fd;">
+                <div style="font-size:13px;font-weight:700;color:#1e40af;margin-bottom:6px;">Tác vụ tại quầy: Phát bản cứng đóng dấu đỏ</div>
+                <button type="button" class="btn btn-blue" style="padding:6px 12px;font-size:12.5px;" onclick="confirmHardCopy('${item.id}')">
+                  ✓ Xác nhận đã đối soát thẻ SV &amp; giao bản cứng
+                </button>
+              </div>`;
+          }
 
-            return `
-              <tr>
-                <td style="white-space: nowrap; font-weight: 600;">
-                  ${item.id}
-                  <div style="font-size: 12px; color: #6b7280; font-weight: normal; margin-top: 2px;">${createdDate}</div>
-                </td>
-                <td>
-                  <div style="font-weight: 600;">${item.studentName}</div>
-                  <div style="font-size: 12.5px; color: #4b5563;">MSSV: ${item.studentCode}</div>
-                  <div style="font-size: 12.5px; color: #4b5563;">Email: ${item.studentEmail}</div>
-                </td>
-                <td>
-                  <div>${item.reason}</div>
-                  <div style="font-size: 12.5px; color: #4b5563; margin-top: 2px;">
-                    Hình thức: <strong>${isSoft ? 'Bản mềm (Gửi Email)' : 'Bản cứng (Nhận tại trường)'}</strong>
-                  </div>
-                  ${adminActionHtml}
-                </td>
-                <td>
-                  <span class="status-text st-${item.status}">
-                    ${formatStatusLabel(item.status)}
-                  </span>
-                  ${resultDetailsHtml}
-                </td>
-              </tr>
-            `;
-          })
-          .join('');
+          const historyHtml = (item.bpmnHistory || [])
+            .map((h) => `<div>• <strong>${h.step}</strong>: ${h.name}</div>`)
+            .join('');
+
+          return `
+            <tr>
+              <td style="white-space:nowrap;">
+                <div style="font-weight:700;color:#0f172a;">${item.id}</div>
+                <div style="font-size:12px;color:#64748b;">${createdStr}</div>
+                ${item.leadTimeMs ? `<div style="font-size:12px;color:#065f46;font-weight:600;margin-top:3px;">Lead time: ${(item.leadTimeMs / 1000).toFixed(2)}s</div>` : ''}
+              </td>
+              <td>
+                <div style="font-weight:700;">${item.studentName}</div>
+                <div style="font-size:13px;color:#334155;">MSSV: <strong>${item.studentCode}</strong> | ${item.academicStatusLabel || ''}</div>
+                <div style="font-size:12.5px;color:#64748b;">${item.studentEmail}</div>
+              </td>
+              <td>
+                ${formatModeBadge(item.processingMode)}
+                <div style="margin-top:2px;"><strong>Mục đích:</strong> ${item.reason}</div>
+                <div style="font-size:12.8px;color:#475569;margin-top:2px;">
+                  Hình thức: <strong>${item.copyType === 'SOFT' ? 'Bản mềm điện tử (PDF + QR)' : 'Bản điện tử + Nhận bản giấy tại trường'}</strong>
+                </div>
+                ${slaBadge}
+                ${adminPanelHtml}
+                <details id="details_${item.id}" ${(typeof expandReq !== 'undefined' && expandReq === item.id) ? 'open' : ''} style="margin-top:8px;font-size:12.5px;color:#475569;cursor:pointer;">
+                  <summary style="font-weight:600;">Xem luồng thực thi BPMN (${(item.bpmnHistory || []).length} mốc)</summary>
+                  <div class="timeline-box">${historyHtml}</div>
+                </details>
+              </td>
+              <td>
+                <span class="badge st-${item.status}" style="font-size:12.5px;padding:4px 9px;">
+                  ${formatStatusLabel(item.status)}
+                </span>
+                ${linksHtml}
+              </td>
+            </tr>`;
+        }).join('');
 
         container.innerHTML = `
           <table class="data-table">
             <thead>
               <tr>
-                <th style="width: 140px;">Mã hồ sơ</th>
-                <th style="width: 240px;">Thông tin sinh viên</th>
-                <th>Nội dung yêu cầu &amp; Xử lý</th>
-                <th style="width: 240px;">Trạng thái &amp; Kết quả</th>
+                <th style="width:145px;">Mã hồ sơ</th>
+                <th style="width:235px;">Sinh viên &amp; CSDL</th>
+                <th>Phân luồng BPMN &amp; Nội dung xử lý</th>
+                <th style="width:240px;">Trạng thái &amp; Kết quả</th>
               </tr>
             </thead>
-            <tbody>
-              ${rowsHtml}
-            </tbody>
-          </table>
-        `;
+            <tbody>${rowsHtml}</tbody>
+          </table>`;
       } catch (err) {
-        container.innerHTML = '<div style="padding: 20px; color: #991b1b;">Lỗi tải danh sách: ' + err.message + '</div>';
+        container.innerHTML = `<div style="padding:20px;color:#991b1b;">Lỗi tải hồ sơ: ${err.message}</div>`;
       }
     }
 
     async function adminVerify(requestId, approved, copyType) {
-      const btn = document.getElementById('btnApprove_' + requestId);
       let appointmentDate = null;
       let pickupLocation = null;
-
       if (approved && copyType === 'HARD') {
-        const rawDt = document.getElementById('appoint_' + requestId).value;
-        if (!rawDt) {
-          return showAlert('Vui lòng chọn thời gian hẹn nhận bản cứng.', 'error');
-        }
-        appointmentDate = rawDt.replace('T', ', ');
-        pickupLocation = document.getElementById('loc_' + requestId).value;
+        const dtEl = document.getElementById('appoint_' + requestId);
+        const locEl = document.getElementById('loc_' + requestId);
+        if (dtEl && dtEl.value) appointmentDate = dtEl.value.replace('T', ', ');
+        if (locEl) pickupLocation = locEl.value;
+      }
+      const noteEl = document.getElementById('note_' + requestId);
+      let adminNote = noteEl ? noteEl.value.trim() : '';
+      if (!approved && (!adminNote || adminNote.includes('đồng ý cấp giấy'))) {
+        adminNote = 'Hồ sơ ngoại lệ chưa đính kèm đủ giấy tờ minh chứng theo quy định';
       }
 
-      const adminNote = document.getElementById('note_' + requestId).value;
+      const res = await fetch(`/api/requests/${requestId}/verify`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + authToken
+        },
+        body: JSON.stringify({ approved, appointmentDate, pickupLocation, adminNote })
+      });
+      const data = await res.json();
+      if (!res.ok) return showAlert(data.error || 'Lỗi xử lý hồ sơ.', 'error');
+      showAlert(data.message);
+      refreshAll();
+    }
 
-      if (btn) {
-        btn.disabled = true;
-        btn.textContent = 'Đang xử lý...';
-      }
+    async function confirmHardCopy(requestId) {
+      const res = await fetch(`/api/requests/${requestId}/issue-hard-copy`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + authToken
+        },
+        body: JSON.stringify({})
+      });
+      const data = await res.json();
+      if (!res.ok) return showAlert(data.error || 'Lỗi xác nhận bản cứng.', 'error');
+      showAlert(data.message);
+      refreshAll();
+    }
 
-      try {
-        const res = await fetch(`/api/requests/${requestId}/verify`, {
+    async function loadStudentsDb() {
+      const container = document.getElementById('studentsTableContainer');
+      const res = await fetch('/api/students', { headers: { Authorization: 'Bearer ' + authToken } });
+      if (!res.ok) return;
+      const { students } = await res.json();
+      const rows = students.map((s) => {
+        const stColor = s.academicStatus !== 'ACTIVE' ? '#991b1b' : (s.tuitionDebt ? '#92400e' : '#065f46');
+        const stBg = s.academicStatus !== 'ACTIVE' ? '#fee2e2' : (s.tuitionDebt ? '#fef3c7' : '#dcfce7');
+        return `
+          <tr>
+            <td style="font-weight:700;">${s.studentCode}</td>
+            <td>
+              <div style="font-weight:600;">${s.fullName}</div>
+              <div style="font-size:12.5px;color:#64748b;">Ngày sinh: ${s.dob} | ${s.email}</div>
+            </td>
+            <td>
+              <div>${s.cohort} - ${s.program}</div>
+              <div style="font-size:12.5px;color:#64748b;">${s.faculty}</div>
+            </td>
+            <td>
+              <span class="badge" style="background:${stBg};color:${stColor};">${s.academicStatusLabel}</span>
+              ${s.note ? `<div style="font-size:12px;color:#64748b;margin-top:3px;">${s.note}</div>` : ''}
+            </td>
+            <td>
+              <button type="button" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;" onclick='fillStudentForm(${JSON.stringify(s)})'>
+                Sửa
+              </button>
+            </td>
+          </tr>`;
+      }).join('');
+
+      container.innerHTML = `
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>MSSV</th>
+              <th>Họ tên &amp; Email</th>
+              <th>Khóa / Ngành đào tạo</th>
+              <th>Trạng thái học vụ &amp; Công nợ</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>`;
+    }
+
+    function fillStudentForm(s) {
+      document.getElementById('dbCode').value = s.studentCode;
+      document.getElementById('dbName').value = s.fullName;
+      document.getElementById('dbDob').value = s.dob || '';
+      document.getElementById('dbCohort').value = s.cohort || '';
+      document.getElementById('dbStatus').value = s.academicStatus || 'ACTIVE';
+      document.getElementById('dbDebt').value = String(Boolean(s.tuitionDebt));
+      document.getElementById('dbNote').value = s.note || '';
+    }
+
+    async function handleSaveStudent(e) {
+      e.preventDefault();
+      const payload = {
+        studentCode: document.getElementById('dbCode').value,
+        fullName: document.getElementById('dbName').value,
+        dob: document.getElementById('dbDob').value,
+        cohort: document.getElementById('dbCohort').value,
+        academicStatus: document.getElementById('dbStatus').value,
+        tuitionDebt: document.getElementById('dbDebt').value === 'true',
+        note: document.getElementById('dbNote').value
+      };
+      const res = await fetch('/api/students', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + authToken
+        },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) return showAlert(data.error || 'Lỗi lưu sinh viên.', 'error');
+      showAlert(data.message);
+      loadStudentsDb();
+    }
+
+    async function checkUrlDemoParams() {
+      const params = new URLSearchParams(window.location.search);
+      const autoUser = params.get('autoUser');
+      const tab = params.get('tab');
+      const hideForm = params.get('hideForm') === '1';
+      const hideList = params.get('hideList') === '1';
+      if (autoUser) {
+        const res = await fetch('/api/login', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + authToken
-          },
-          body: JSON.stringify({
-            approved,
-            appointmentDate,
-            pickupLocation,
-            adminNote
-          })
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: autoUser, password: '123' })
         });
-        const data = await res.json();
-        if (!res.ok) {
-          showAlert(data.error || 'Lỗi xử lý hồ sơ.', 'error');
-        } else {
-          let extraLink = '';
-          if (data.request?.emailResult?.previewUrl) {
-            extraLink = ` <a href="${data.request.emailResult.previewUrl}" target="_blank" style="font-weight:600; color:#065f46; text-decoration:underline;">Xem email đã gửi</a>`;
-          }
-          showAlert(data.message + extraLink);
-          loadRequests();
+        if (res.ok) {
+          const data = await res.json();
+          authToken = data.token;
+          currentUser = data.user;
+          localStorage.setItem('vnu_token', authToken);
+          localStorage.setItem('vnu_user', JSON.stringify(currentUser));
+          renderAppView();
+          if (tab === 'students') switchAdminTab('students');
+          if (hideForm) document.getElementById('studentFormCard').classList.add('hidden');
+          if (hideList) document.getElementById('requestsPanel').classList.add('hidden');
+          return;
         }
-      } catch (err) {
-        showAlert('Lỗi: ' + err.message, 'error');
-      } finally {
-        if (btn) btn.disabled = false;
       }
+      if (authToken && currentUser) renderAppView();
     }
 
     initGoogleOAuthConfig();
-    if (authToken && currentUser) {
-      renderAppView();
-    }
+    checkUrlDemoParams();
   </script>
 </body>
 </html>

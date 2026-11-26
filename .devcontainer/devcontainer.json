@@ -1,0 +1,19 @@
+{
+  "name": "Demo Cap Giay Xac Nhan Sinh Vien (Camunda 8 + Node.js)",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-20-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "forwardPorts": [3000, 26500, 9600],
+  "portsAttributes": {
+    "3000": {
+      "label": "Cổng dịch vụ Cấp giấy xác nhận sinh viên",
+      "onAutoForward": "openBrowser",
+      "visibility": "public"
+    },
+    "26500": {
+      "label": "Camunda 8 Zeebe gRPC Gateway"
+    }
+  },
+  "postCreateCommand": "npm install"
+}

@@ -1,68 +1,95 @@
-# Hệ Thống Cấp Giấy Xác Nhận Sinh Viên (Camunda 8 BPMN)
+# Hệ thống Tự động hóa Quy trình Cấp Giấy Xác Nhận Sinh Viên (To-Be)
 
-Ứng dụng Web đơn giản tích hợp **Camunda 8 (Zeebe)** phục vụ quy trình xin cấp và duyệt **Giấy xác nhận sinh viên** với 2 hình thức **Bản mềm (tự động gửi PDF qua Email)** và **Bản cứng (Admin hẹn lịch lấy)**.
-
----
-
-## 1. Tài khoản đăng nhập (2 User)
-
-| Vai trò | Tài khoản (`username`) | Mật khẩu (`password`) | Chức năng chính |
-| :--- | :--- | :--- | :--- |
-| **Sinh viên** | `sinhvien` | `123` | Gửi yêu cầu cấp giấy xác nhận, chọn **Bản mềm** hoặc **Bản cứng**, nhập Email nhận giấy, theo dõi trạng thái & tải PDF |
-| **Admin** | `admin` | `123` | **Verify (Xác minh & Duyệt)** yêu cầu của sinh viên: nếu là **Bản cứng** thì chọn ngày/giờ hẹn lịch lấy; nếu là **Bản mềm** sau khi bấm Verify hệ thống tự động tạo PDF và gửi qua Email sinh viên |
-
-*(Trên màn hình đăng nhập có sẵn 2 nút bấm chọn nhanh tài khoản **Sinh viên** và **Admin**)*
+Dự án mẫu (Proof of Concept) thuộc học phần **Khoa học Dịch vụ – INT3501** (Nhóm 14 – Trường Đại học Công nghệ, ĐHQGHN), hiện thực hóa quy trình đề xuất (**To-Be**) cho thủ tục cấp giấy xác nhận sinh viên trên nền tảng **Camunda 8 (Zeebe / Built-in Engine)** kết hợp cổng dịch vụ Web **Node.js / Express**.
 
 ---
 
-## 2. Quy trình Camunda 8 BPMN (`bpmn/student-certificate.bpmn`)
+## 1. Tính năng cốt lõi (Quy trình To-Be)
 
-File quy trình chuẩn Camunda 8 Zeebe được đặt tại [`bpmn/student-certificate.bpmn`](bpmn/student-certificate.bpmn) (có thể mở bằng **Camunda Modeler 5.x** hoặc **Camunda 8 Web Modeler**):
-
-1. **Start Event (`StartEvent_RequestSubmitted`)**: Sinh viên gửi yêu cầu cấp giấy xác nhận (`copyType = "SOFT"` hoặc `"HARD"`).
-2. **Service Task (`Task_AdminVerify` - type: `admin-verify-certificate`)**: Hồ sơ nằm chờ Admin bấm **Verify** trên giao diện Web.
-3. **Exclusive Gateway (`Gateway_IsApproved`)**: Kiểm tra `=approved = true` hay `=approved = false`.
-4. **Exclusive Gateway (`Gateway_CopyType`)**: Phân luồng theo loại bản cấp:
-   - Nếu `=copyType = "SOFT"` (**Bản mềm**) ➡️ Chạy Service Task **`Task_SendSoftCopyEmail`** (`type: send-soft-copy-email`): Worker tự động sinh file PDF Giấy xác nhận sinh viên có dấu xác thực và gửi thẳng vào Email sinh viên.
-   - Nếu `=copyType = "HARD"` (**Bản cứng**) ➡️ Chạy Service Task **`Task_ScheduleHardCopy`** (`type: schedule-hard-copy`): Worker ghi nhận lịch hẹn ngày/giờ và địa điểm lấy bản cứng cho sinh viên.
+1. **Cơ sở dữ liệu sinh viên (`data/students.json` & `studentDbService.js`)**:
+   - Lưu trữ hồ sơ học vụ (`ACTIVE` – Đang theo học, `ON_LEAVE` – Đang bảo lưu, `DROPPED` – Đã thôi học), tình trạng công nợ học phí, ngày sinh, khóa học, chương trình đào tạo và khoa/viện.
+   - Cho phép chuyên viên CTSV xem, thêm mới hoặc cập nhật trạng thái sinh viên trực tiếp trên giao diện Web để kiểm thử các nhánh phân luồng.
+2. **Xử lý thẳng tự động – Straight-Through Processing (`STP`)**:
+   - Worker `tra-cuu-mssv` tự động đối chiếu MSSV và phân loại mục đích xin giấy ngay khi sinh viên gửi yêu cầu:
+     - **Không đủ điều kiện** (bảo lưu, thôi học, không tồn tại MSSV): Tự động từ chối và gửi email thông báo lý do (`EndEvent_KhongDuDieuKien`).
+     - **Đủ điều kiện + Mục đích thông thường** (`HOC_BONG`, `VAY_VON`, `NGHIA_VU_QUAN_SU`, `VE_UU_DAI`) và không nợ học phí: **Duyệt thẳng (STP)** không cần chờ cán bộ, tự động sinh file PDF kèm mã QR xác thực trực tuyến (`sinh-giay-pdf`) và gửi email đính kèm PDF cho sinh viên (`gui-thong-bao-cap`).
+     - **Hồ sơ ngoại lệ** (mục đích `KHAC` hoặc có cảnh báo công nợ học phí): Chuyển sang hàng đợi thẩm định của chuyên viên CTSV (`Task_DuyetNgoaiLe`).
+3. **Bộ hẹn giờ nhắc hạn SLA không ngắt (`Non-interrupting Boundary Timer`)**:
+   - Gắn trực tiếp vào tác vụ `Task_DuyetNgoaiLe` (`Timer_QuaHanSLA`, `cancelActivity="false"`).
+   - Mốc thiết kế chuẩn là **4 giờ**; trên giao diện quản trị có thể chuyển nhanh giữa **10 giây / 1 phút / 4 giờ** để kiểm thử trực quan. Khi quá hạn, worker `nhac-viec-sla` tự động gửi email nhắc cán bộ CTSV và báo trưởng phòng trong khi tác vụ duyệt vẫn giữ nguyên.
+4. **Nhận bản điện tử hoặc kèm bản cứng**:
+   - Sinh viên chỉ cần bản điện tử kết thúc ngay tại `EndEvent_DaCapDienTu` (0 lần lên trường).
+   - Sinh viên cần bản giấy dấu đỏ vẫn nhận trước bản PDF qua email kèm lịch hẹn đến quầy CTSV (`Task_PhatBanCung` -> `EndEvent_DaCapBanCung`).
 
 ---
 
-## 3. Cách chạy trực tiếp trên máy (Local)
+## 2. Tài khoản dùng thử tích hợp sẵn
 
+| Vai trò | Tài khoản / MSSV | Mật khẩu | Kịch bản kiểm thử tiêu biểu |
+| :--- | :--- | :---: | :--- |
+| **Sinh viên đủ điều kiện (STP)** | `24020313` (Đinh Đức Thịnh)<br>`24020097` (Vũ Việt Dũng)<br>`24020205` (Đào Mạnh Hải Long) | `123` | Nộp mục đích chuẩn -> **Duyệt thẳng (STP)**, nhận PDF + QR ngay lập tức |
+| **Sinh viên nợ học phí (Ngoại lệ)** | `23021108` (Lê Hoàng Nam) | `123` | Tự động chuyển vào `Task_DuyetNgoaiLe` + kích hoạt đồng hồ đếm ngược **SLA** |
+| **Sinh viên đang bảo lưu** | `22024019` (Phạm Quang Huy) | `123` | Hệ thống tự động từ chối tại cổng `MSSV hợp lệ?` và gửi email thông báo |
+| **Chuyên viên Phòng CTSV** | `ctsv@vnu.edu.vn` | `123` | Duyệt/từ chối ngoại lệ, chỉnh mốc Timer SLA, xác nhận phát bản cứng, quản lý CSDL |
+
+*(Ngoài ra hỗ trợ đăng nhập một lần bằng tài khoản Google `@vnu.edu.vn` khi khai báo `GOOGLE_CLIENT_ID` trong `.env`.)*
+
+---
+
+## 3. Hướng dẫn cài đặt và chạy dự án
+
+### Cách 1: Chạy nhanh trên máy cá nhân (Camunda 8 Built-in Engine)
+```powershell
+npm.cmd install
+node server.js
+```
+Mở trình duyệt tại địa chỉ: `http://localhost:3000`.
+*(Trên Windows PowerShell nếu bị chặn `npm.ps1`, sử dụng `npm.cmd` thay cho `npm`.)*
+
+### Cách 2: Chạy kết hợp cụm Camunda 8 Zeebe Broker qua Docker
 ```bash
-npm install
-npm start
+docker compose up -d --build
+# Hoặc chỉ chạy Zeebe trên Docker và chạy Web ở máy host:
+docker compose up -d zeebe
+npm run deploy-bpmn
+ZEEBE_ADDRESS=localhost:26500 node server.js
 ```
 
-Mở trình duyệt tại: **http://localhost:3000**
-
-> **Lưu ý:** Ứng dụng có cơ chế **Dual-Mode (Tự động thích ứng)**:
-> - Nếu bạn bật cụm **Camunda 8 Zeebe** (qua Docker hoặc Camunda 8 SaaS), ứng dụng sẽ kết nối trực tiếp vào Zeebe Broker thông qua `@camunda8/sdk`, tự động deploy file `student-certificate.bpmn` và chạy 3 Zeebe Workers thật.
-> - Nếu chưa bật Docker/Zeebe bên ngoài, ứng dụng tự động dùng **Camunda 8 Built-in Engine** đi kèm để bạn vẫn chạy thử toàn bộ luồng BPMN, tạo PDF và gửi Email ngay lập tức mà không bị lỗi kết nối.
-
----
-
-## 4. Cách chạy cả Camunda 8 (Zeebe) + Web Public ngay trên GitHub (GitHub Codespaces)
-
-Dự án đã được cấu hình sẵn [`.devcontainer/devcontainer.json`](.devcontainer/devcontainer.json) và [`docker-compose.yml`](docker-compose.yml) để bạn chạy trực tiếp cả cụm **Camunda 8 Zeebe** trên GitHub với đường link Web **Public**:
-
-1. Đẩy code lên repository GitHub của bạn.
-2. Trên giao diện GitHub repo, bấm nút **`<> Code`** ➡️ chọn tab **`Codespaces`** ➡️ bấm **`Create codespace on main`**.
-3. Khi cửa sổ Codespaces mở ra:
-   - **Cách A (Chạy Web ngay trong 2 giây):**
-     ```bash
-     npm start
-     ```
-   - **Cách B (Chạy cả cụm Camunda 8 Zeebe Broker thật bằng Docker trên GitHub Codespaces):**
-     ```bash
-     docker-compose up -d
-     ```
-4. Ở tab **PORTS** bên dưới GitHub Codespaces, cổng `3000` đã được cấu hình sẵn `visibility: public` — bạn có thể mở link public đó để truy cập web từ bất kỳ thiết bị nào!
+### Cách 3: Tái lập thực nghiệm 40 hồ sơ KPI (Chương 5 & Phụ lục)
+```powershell
+node scripts/run-kpi-batch.js
+```
+Script tự động khởi tạo và chạy 40 hồ sơ thuộc 4 kịch bản (`32 stp`, `3 duyet_ngoai_le`, `2 tu_choi`, `3 qua_han_sla`), xuất dữ liệu đo đạc ra:
+- `data/kpi_scenario_instances.csv`
+- `data/kpi_element_instances.csv`
+- `data/kpi_summary.json`
 
 ---
 
-## 5. Cấu hình gửi Email Bản mềm (Gmail thật hoặc Ethereal Email tự động)
+## 4. Cấu trúc thư mục
 
-- **Mặc định (Không cần cấu hình gì thêm):** Hệ thống sử dụng `nodemailer` tự động tạo hộp thư **Ethereal SMTP** miễn phí. Ngay sau khi Admin bấm **Verify** một yêu cầu **Bản mềm**, trên màn hình sẽ hiện nút **"📬 Mở xem Email đã gửi"** để bạn xem trực tiếp email vừa gửi kèm file PDF đính kèm, hoặc bấm **"📄 Tải / Xem Giấy Xác Nhận (PDF)"**.
-- **Gửi qua Gmail thật:** Tạo file `.env` (dựa theo [`.env.example`](.env.example)) và điền `SMTP_HOST=smtp.gmail.com`, `SMTP_USER`, `SMTP_PASS` (App Password 16 ký tự của Gmail).
+```text
+Demo_CapGiayXacNhanSinhVien/
+├── bpmn/
+│   └── student-certificate.bpmn     # Mô hình BPMN 2.0 thực thi (Pool 2 Lane, STP, Non-interrupting Timer SLA)
+├── data/
+│   ├── students.json                # CSDL sinh viên mẫu (trạng thái học vụ, công nợ, khóa, ngành)
+│   ├── requests.json                # Lưu trữ trạng thái hồ sơ & lịch sử sự kiện BPMN
+│   ├── kpi_scenario_instances.csv   # Log thực nghiệm 40 hồ sơ theo kịch bản
+│   └── kpi_element_instances.csv    # Log thời gian thực thi từng bước BPMN
+├── public/
+│   └── index.html                   # Giao diện Cổng dịch vụ Sinh viên & Bảng điều khiển CTSV
+├── scripts/
+│   ├── deploy-bpmn.js               # Script deploy mô hình BPMN lên Zeebe Broker
+│   └── run-kpi-batch.js             # Script chạy tự động batch 40 hồ sơ và xuất thống kê KPI
+├── services/
+│   ├── studentDbService.js          # Dịch vụ tra cứu CSDL sinh viên & phân loại STP / Ngoại lệ
+│   ├── camundaService.js            # Điều phối Zeebe / Built-in Engine, Job Workers & SLA Timer
+│   ├── pdfService.js                # Sinh Giấy xác nhận PDF hành chính kèm mã QR xác thực
+│   └── emailService.js              # Gửi email cấp giấy, email từ chối và email nhắc hạn SLA
+├── report/
+│   └── baocaokhdv.docx              # Báo cáo bài tập lớn học phần Khoa học dịch vụ (INT3501)
+├── server.js                        # Express REST API Server
+├── docker-compose.yml               # Cấu hình triển khai Zeebe 8.5 + Webapp
+└── .env.example                     # Mẫu biến môi trường cấu hình hệ thống
+```

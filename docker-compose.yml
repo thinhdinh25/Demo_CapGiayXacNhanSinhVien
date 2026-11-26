@@ -18,10 +18,13 @@ services:
       timeout: 5s
       retries: 10
 
-  # Web ứng dụng Cấp Giấy Xác Nhận Sinh Viên
+  # Web ứng dụng Cấp Giấy Xác Nhận Sinh Viên (To-Be)
   webapp:
     build: .
     container_name: student-certificate-web
+    env_file:
+      - path: .env
+        required: false
     ports:
       - "3000:3000"
     environment:
@@ -29,4 +32,5 @@ services:
       - ZEEBE_ADDRESS=zeebe:26500
       - CAMUNDA_SECURE_CONNECTION=false
     depends_on:
-      - zeebe
+      zeebe:
+        condition: service_healthy

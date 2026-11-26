@@ -5,161 +5,357 @@
                   xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
                   xmlns:zeebe="http://camunda.org/schema/zeebe/1.0"
                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  id="Definitions_CapGiayXacNhan"
+                  id="Definitions_CapGiayXacNhanToBe"
                   targetNamespace="http://bpmn.io/schema/bpmn"
                   exporter="Camunda Modeler"
                   exporterVersion="5.25.0">
-  <bpmn:process id="student_certificate_process" name="Quy trình cấp giấy xác nhận sinh viên (Camunda 8)" isExecutable="true">
-    <bpmn:startEvent id="StartEvent_RequestSubmitted" name="Sinh viên gửi yêu cầu">
-      <bpmn:outgoing>Flow_Start_To_Verify</bpmn:outgoing>
+
+  <bpmn:collaboration id="Collaboration_CapGiayToBe">
+    <bpmn:participant id="Participant_UET" name="Cấp giấy xác nhận sinh viên (To-Be, tự động hóa)" processRef="student_certificate_process" />
+  </bpmn:collaboration>
+
+  <bpmn:process id="student_certificate_process" name="Quy trình cấp giấy xác nhận sinh viên (To-Be)" isExecutable="true">
+    <bpmn:laneSet id="LaneSet_ToBe">
+      <bpmn:lane id="Lane_System" name="Hệ thống (Camunda 8 + Cổng dịch vụ SV)">
+        <bpmn:flowNodeRef>StartEvent_RequestSubmitted</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_TraCuu</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_MssvHopLe</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ThongBaoKhongDuDieuKien</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_KhongDuDieuKien</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_CanDuyetTay</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_MergeCapGiay</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_SinhPDF</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_GuiEmail</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_CanBanCung</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_DaCapDienTu</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Staff" name="Chuyên viên CTSV">
+        <bpmn:flowNodeRef>Task_DuyetNgoaiLe</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Timer_QuaHanSLA</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_NhacViec</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_DaNhac</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_DongY</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ThongBaoTuChoi</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_BiTuChoi</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_PhatBanCung</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_DaCapBanCung</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="StartEvent_RequestSubmitted" name="Yêu cầu từ cổng dịch vụ SV">
+      <bpmn:outgoing>Flow_Start_To_TraCuu</bpmn:outgoing>
     </bpmn:startEvent>
 
-    <bpmn:serviceTask id="Task_AdminVerify" name="Admin xác minh &amp; duyệt yêu cầu">
+    <bpmn:serviceTask id="Task_TraCuu" name="Tra cứu MSSV và phân loại">
       <bpmn:extensionElements>
-        <zeebe:taskDefinition type="admin-verify-certificate" retries="3" />
+        <zeebe:taskDefinition type="tra-cuu-mssv" retries="3" />
       </bpmn:extensionElements>
-      <bpmn:incoming>Flow_Start_To_Verify</bpmn:incoming>
-      <bpmn:outgoing>Flow_Verify_To_GatewayApproved</bpmn:outgoing>
+      <bpmn:incoming>Flow_Start_To_TraCuu</bpmn:incoming>
+      <bpmn:outgoing>Flow_TraCuu_To_HopLe</bpmn:outgoing>
     </bpmn:serviceTask>
 
-    <bpmn:exclusiveGateway id="Gateway_IsApproved" name="Kết quả duyệt?">
-      <bpmn:incoming>Flow_Verify_To_GatewayApproved</bpmn:incoming>
-      <bpmn:outgoing>Flow_Approved_Yes</bpmn:outgoing>
-      <bpmn:outgoing>Flow_Approved_No</bpmn:outgoing>
+    <bpmn:exclusiveGateway id="Gateway_MssvHopLe" name="MSSV hợp lệ?" default="Flow_KhongHopLe">
+      <bpmn:incoming>Flow_TraCuu_To_HopLe</bpmn:incoming>
+      <bpmn:outgoing>Flow_HopLe</bpmn:outgoing>
+      <bpmn:outgoing>Flow_KhongHopLe</bpmn:outgoing>
     </bpmn:exclusiveGateway>
 
-    <bpmn:exclusiveGateway id="Gateway_CopyType" name="Loại bản cấp?">
-      <bpmn:incoming>Flow_Approved_Yes</bpmn:incoming>
-      <bpmn:outgoing>Flow_Type_Soft</bpmn:outgoing>
-      <bpmn:outgoing>Flow_Type_Hard</bpmn:outgoing>
+    <bpmn:serviceTask id="Task_ThongBaoKhongDuDieuKien" name="Thông báo không đủ điều kiện">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="gui-thong-bao-tu-choi" retries="3" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_KhongHopLe</bpmn:incoming>
+      <bpmn:outgoing>Flow_KhongDuDK_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:endEvent id="EndEvent_KhongDuDieuKien" name="Không đủ điều kiện">
+      <bpmn:incoming>Flow_KhongDuDK_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:exclusiveGateway id="Gateway_CanDuyetTay" name="Cần duyệt tay?" default="Flow_STP">
+      <bpmn:incoming>Flow_HopLe</bpmn:incoming>
+      <bpmn:outgoing>Flow_STP</bpmn:outgoing>
+      <bpmn:outgoing>Flow_CanDuyet</bpmn:outgoing>
     </bpmn:exclusiveGateway>
 
-    <bpmn:serviceTask id="Task_SendSoftCopyEmail" name="Tự động tạo PDF &amp; Gửi Email bản mềm">
+    <bpmn:serviceTask id="Task_DuyetNgoaiLe" name="Duyệt ngoại lệ">
       <bpmn:extensionElements>
-        <zeebe:taskDefinition type="send-soft-copy-email" retries="3" />
+        <zeebe:taskDefinition type="duyet-ngoai-le" retries="1" />
       </bpmn:extensionElements>
-      <bpmn:incoming>Flow_Type_Soft</bpmn:incoming>
-      <bpmn:outgoing>Flow_Soft_To_End</bpmn:outgoing>
+      <bpmn:incoming>Flow_CanDuyet</bpmn:incoming>
+      <bpmn:outgoing>Flow_Duyet_To_DongY</bpmn:outgoing>
     </bpmn:serviceTask>
 
-    <bpmn:serviceTask id="Task_ScheduleHardCopy" name="Ghi nhận lịch hẹn lấy bản cứng &amp; báo SV">
+    <bpmn:boundaryEvent id="Timer_QuaHanSLA" name="Quá hạn SLA (4 giờ)" cancelActivity="false" attachedToRef="Task_DuyetNgoaiLe">
+      <bpmn:outgoing>Flow_Timer_To_NhacViec</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDef_SLA">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">=slaDuration</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:serviceTask id="Task_NhacViec" name="Nhắc cán bộ, báo trưởng phòng">
       <bpmn:extensionElements>
-        <zeebe:taskDefinition type="schedule-hard-copy" retries="3" />
+        <zeebe:taskDefinition type="nhac-viec-sla" retries="3" />
       </bpmn:extensionElements>
-      <bpmn:incoming>Flow_Type_Hard</bpmn:incoming>
-      <bpmn:outgoing>Flow_Hard_To_End</bpmn:outgoing>
+      <bpmn:incoming>Flow_Timer_To_NhacViec</bpmn:incoming>
+      <bpmn:outgoing>Flow_NhacViec_End</bpmn:outgoing>
     </bpmn:serviceTask>
 
-    <bpmn:endEvent id="EndEvent_Completed" name="Hoàn tất cấp giấy">
-      <bpmn:incoming>Flow_Soft_To_End</bpmn:incoming>
-      <bpmn:incoming>Flow_Hard_To_End</bpmn:incoming>
+    <bpmn:endEvent id="EndEvent_DaNhac" name="Đã nhắc">
+      <bpmn:incoming>Flow_NhacViec_End</bpmn:incoming>
     </bpmn:endEvent>
 
-    <bpmn:endEvent id="EndEvent_Rejected" name="Từ chối yêu cầu">
-      <bpmn:incoming>Flow_Approved_No</bpmn:incoming>
+    <bpmn:exclusiveGateway id="Gateway_DongY" name="Đồng ý?" default="Flow_TuChoi">
+      <bpmn:incoming>Flow_Duyet_To_DongY</bpmn:incoming>
+      <bpmn:outgoing>Flow_DongY</bpmn:outgoing>
+      <bpmn:outgoing>Flow_TuChoi</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:serviceTask id="Task_ThongBaoTuChoi" name="Thông báo từ chối kèm lý do">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="gui-thong-bao-tu-choi" retries="3" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_TuChoi</bpmn:incoming>
+      <bpmn:outgoing>Flow_TuChoi_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:endEvent id="EndEvent_BiTuChoi" name="Bị từ chối">
+      <bpmn:incoming>Flow_TuChoi_End</bpmn:incoming>
     </bpmn:endEvent>
 
-    <bpmn:sequenceFlow id="Flow_Start_To_Verify" sourceRef="StartEvent_RequestSubmitted" targetRef="Task_AdminVerify" />
-    <bpmn:sequenceFlow id="Flow_Verify_To_GatewayApproved" sourceRef="Task_AdminVerify" targetRef="Gateway_IsApproved" />
+    <bpmn:exclusiveGateway id="Gateway_MergeCapGiay">
+      <bpmn:incoming>Flow_STP</bpmn:incoming>
+      <bpmn:incoming>Flow_DongY</bpmn:incoming>
+      <bpmn:outgoing>Flow_Merge_To_SinhPDF</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
 
-    <bpmn:sequenceFlow id="Flow_Approved_Yes" name="Đã duyệt (Verified)" sourceRef="Gateway_IsApproved" targetRef="Gateway_CopyType">
+    <bpmn:serviceTask id="Task_SinhPDF" name="Sinh PDF có QR xác thực">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="sinh-giay-pdf" retries="3" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Merge_To_SinhPDF</bpmn:incoming>
+      <bpmn:outgoing>Flow_SinhPDF_To_GuiEmail</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:serviceTask id="Task_GuiEmail" name="Gửi bản điện tử qua email">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="gui-thong-bao-cap" retries="3" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_SinhPDF_To_GuiEmail</bpmn:incoming>
+      <bpmn:outgoing>Flow_GuiEmail_To_CanBanCung</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:exclusiveGateway id="Gateway_CanBanCung" name="Cần bản cứng?" default="Flow_KhongBanCung">
+      <bpmn:incoming>Flow_GuiEmail_To_CanBanCung</bpmn:incoming>
+      <bpmn:outgoing>Flow_KhongBanCung</bpmn:outgoing>
+      <bpmn:outgoing>Flow_CoBanCung</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:endEvent id="EndEvent_DaCapDienTu" name="Đã cấp (bản điện tử)">
+      <bpmn:incoming>Flow_KhongBanCung</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:serviceTask id="Task_PhatBanCung" name="Phát bản cứng tại phòng CTSV">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="phat-ban-cung" retries="1" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_CoBanCung</bpmn:incoming>
+      <bpmn:outgoing>Flow_PhatBanCung_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:endEvent id="EndEvent_DaCapBanCung" name="Đã cấp (kèm bản cứng)">
+      <bpmn:incoming>Flow_PhatBanCung_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Sequence Flows -->
+    <bpmn:sequenceFlow id="Flow_Start_To_TraCuu" sourceRef="StartEvent_RequestSubmitted" targetRef="Task_TraCuu" />
+    <bpmn:sequenceFlow id="Flow_TraCuu_To_HopLe" sourceRef="Task_TraCuu" targetRef="Gateway_MssvHopLe" />
+    <bpmn:sequenceFlow id="Flow_HopLe" name="Có" sourceRef="Gateway_MssvHopLe" targetRef="Gateway_CanDuyetTay">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=isEligible = true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_KhongHopLe" name="Không" sourceRef="Gateway_MssvHopLe" targetRef="Task_ThongBaoKhongDuDieuKien" />
+    <bpmn:sequenceFlow id="Flow_KhongDuDK_End" sourceRef="Task_ThongBaoKhongDuDieuKien" targetRef="EndEvent_KhongDuDieuKien" />
+
+    <bpmn:sequenceFlow id="Flow_STP" name="Không (tự duyệt)" sourceRef="Gateway_CanDuyetTay" targetRef="Gateway_MergeCapGiay" />
+    <bpmn:sequenceFlow id="Flow_CanDuyet" name="Có (ngoại lệ)" sourceRef="Gateway_CanDuyetTay" targetRef="Task_DuyetNgoaiLe">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=needManualReview = true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_Timer_To_NhacViec" sourceRef="Timer_QuaHanSLA" targetRef="Task_NhacViec" />
+    <bpmn:sequenceFlow id="Flow_NhacViec_End" sourceRef="Task_NhacViec" targetRef="EndEvent_DaNhac" />
+
+    <bpmn:sequenceFlow id="Flow_Duyet_To_DongY" sourceRef="Task_DuyetNgoaiLe" targetRef="Gateway_DongY" />
+    <bpmn:sequenceFlow id="Flow_DongY" name="Có" sourceRef="Gateway_DongY" targetRef="Gateway_MergeCapGiay">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=approved = true</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_TuChoi" name="Không" sourceRef="Gateway_DongY" targetRef="Task_ThongBaoTuChoi" />
+    <bpmn:sequenceFlow id="Flow_TuChoi_End" sourceRef="Task_ThongBaoTuChoi" targetRef="EndEvent_BiTuChoi" />
 
-    <bpmn:sequenceFlow id="Flow_Approved_No" name="Từ chối" sourceRef="Gateway_IsApproved" targetRef="EndEvent_Rejected">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=approved = false</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-
-    <bpmn:sequenceFlow id="Flow_Type_Soft" name="Bản mềm (SOFT)" sourceRef="Gateway_CopyType" targetRef="Task_SendSoftCopyEmail">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=copyType = "SOFT"</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-
-    <bpmn:sequenceFlow id="Flow_Type_Hard" name="Bản cứng (HARD)" sourceRef="Gateway_CopyType" targetRef="Task_ScheduleHardCopy">
+    <bpmn:sequenceFlow id="Flow_Merge_To_SinhPDF" sourceRef="Gateway_MergeCapGiay" targetRef="Task_SinhPDF" />
+    <bpmn:sequenceFlow id="Flow_SinhPDF_To_GuiEmail" sourceRef="Task_SinhPDF" targetRef="Task_GuiEmail" />
+    <bpmn:sequenceFlow id="Flow_GuiEmail_To_CanBanCung" sourceRef="Task_GuiEmail" targetRef="Gateway_CanBanCung" />
+    <bpmn:sequenceFlow id="Flow_KhongBanCung" name="Không" sourceRef="Gateway_CanBanCung" targetRef="EndEvent_DaCapDienTu" />
+    <bpmn:sequenceFlow id="Flow_CoBanCung" name="Có" sourceRef="Gateway_CanBanCung" targetRef="Task_PhatBanCung">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=copyType = "HARD"</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-
-    <bpmn:sequenceFlow id="Flow_Soft_To_End" sourceRef="Task_SendSoftCopyEmail" targetRef="EndEvent_Completed" />
-    <bpmn:sequenceFlow id="Flow_Hard_To_End" sourceRef="Task_ScheduleHardCopy" targetRef="EndEvent_Completed" />
+    <bpmn:sequenceFlow id="Flow_PhatBanCung_End" sourceRef="Task_PhatBanCung" targetRef="EndEvent_DaCapBanCung" />
   </bpmn:process>
 
-  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
-    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="student_certificate_process">
+  <bpmndi:BPMNDiagram id="BPMNDiagram_ToBe">
+    <bpmndi:BPMNPlane id="BPMNPlane_ToBe" bpmnElement="Collaboration_CapGiayToBe">
+      <bpmndi:BPMNShape id="Participant_UET_di" bpmnElement="Participant_UET" isHorizontal="true">
+        <dc:Bounds x="120" y="60" width="1420" height="540" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_System_di" bpmnElement="Lane_System" isHorizontal="true">
+        <dc:Bounds x="150" y="60" width="1390" height="270" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Staff_di" bpmnElement="Lane_Staff" isHorizontal="true">
+        <dc:Bounds x="150" y="330" width="1390" height="270" />
+      </bpmndi:BPMNShape>
+
       <bpmndi:BPMNShape id="StartEvent_RequestSubmitted_di" bpmnElement="StartEvent_RequestSubmitted">
-        <dc:Bounds x="162" y="182" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="138" y="225" width="85" height="27" />
-        </bpmndi:BPMNLabel>
+        <dc:Bounds x="202" y="192" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_AdminVerify_di" bpmnElement="Task_AdminVerify">
-        <dc:Bounds x="260" y="160" width="130" height="80" />
+      <bpmndi:BPMNShape id="Task_TraCuu_di" bpmnElement="Task_TraCuu">
+        <dc:Bounds x="280" y="170" width="130" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_IsApproved_di" bpmnElement="Gateway_IsApproved" isMarkerVisible="true">
-        <dc:Bounds x="455" y="175" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="441" y="151" width="78" height="14" />
-        </bpmndi:BPMNLabel>
+      <bpmndi:BPMNShape id="Gateway_MssvHopLe_di" bpmnElement="Gateway_MssvHopLe" isMarkerVisible="true">
+        <dc:Bounds x="455" y="185" width="50" height="50" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_CopyType_di" bpmnElement="Gateway_CopyType" isMarkerVisible="true">
-        <dc:Bounds x="585" y="175" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="574" y="151" width="72" height="14" />
-        </bpmndi:BPMNLabel>
+      <bpmndi:BPMNShape id="Task_ThongBaoKhongDuDieuKien_di" bpmnElement="Task_ThongBaoKhongDuDieuKien">
+        <dc:Bounds x="540" y="80" width="140" height="75" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_SendSoftCopyEmail_di" bpmnElement="Task_SendSoftCopyEmail">
-        <dc:Bounds x="720" y="90" width="140" height="80" />
+      <bpmndi:BPMNShape id="EndEvent_KhongDuDieuKien_di" bpmnElement="EndEvent_KhongDuDieuKien">
+        <dc:Bounds x="722" y="100" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_ScheduleHardCopy_di" bpmnElement="Task_ScheduleHardCopy">
-        <dc:Bounds x="720" y="240" width="140" height="80" />
+      <bpmndi:BPMNShape id="Gateway_CanDuyetTay_di" bpmnElement="Gateway_CanDuyetTay" isMarkerVisible="true">
+        <dc:Bounds x="565" y="185" width="50" height="50" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="EndEvent_Completed_di" bpmnElement="EndEvent_Completed">
-        <dc:Bounds x="942" y="182" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="916" y="225" width="88" height="14" />
-        </bpmndi:BPMNLabel>
+
+      <bpmndi:BPMNShape id="Task_DuyetNgoaiLe_di" bpmnElement="Task_DuyetNgoaiLe">
+        <dc:Bounds x="525" y="365" width="130" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="EndEvent_Rejected_di" bpmnElement="EndEvent_Rejected">
-        <dc:Bounds x="462" y="312" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="439" y="355" width="82" height="14" />
-        </bpmndi:BPMNLabel>
+      <bpmndi:BPMNShape id="Timer_QuaHanSLA_di" bpmnElement="Timer_QuaHanSLA">
+        <dc:Bounds x="572" y="427" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_Start_To_Verify_di" bpmnElement="Flow_Start_To_Verify">
-        <di:waypoint x="198" y="200" />
-        <di:waypoint x="260" y="200" />
+      <bpmndi:BPMNShape id="Task_NhacViec_di" bpmnElement="Task_NhacViec">
+        <dc:Bounds x="525" y="495" width="140" height="75" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_DaNhac_di" bpmnElement="EndEvent_DaNhac">
+        <dc:Bounds x="712" y="515" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Gateway_DongY_di" bpmnElement="Gateway_DongY" isMarkerVisible="true">
+        <dc:Bounds x="705" y="380" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ThongBaoTuChoi_di" bpmnElement="Task_ThongBaoTuChoi">
+        <dc:Bounds x="800" y="365" width="140" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_BiTuChoi_di" bpmnElement="EndEvent_BiTuChoi">
+        <dc:Bounds x="982" y="387" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Gateway_MergeCapGiay_di" bpmnElement="Gateway_MergeCapGiay" isMarkerVisible="true">
+        <dc:Bounds x="825" y="185" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SinhPDF_di" bpmnElement="Task_SinhPDF">
+        <dc:Bounds x="920" y="170" width="135" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GuiEmail_di" bpmnElement="Task_GuiEmail">
+        <dc:Bounds x="1095" y="170" width="135" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_CanBanCung_di" bpmnElement="Gateway_CanBanCung" isMarkerVisible="true">
+        <dc:Bounds x="1275" y="185" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_DaCapDienTu_di" bpmnElement="EndEvent_DaCapDienTu">
+        <dc:Bounds x="1422" y="192" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_PhatBanCung_di" bpmnElement="Task_PhatBanCung">
+        <dc:Bounds x="1290" y="385" width="140" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_DaCapBanCung_di" bpmnElement="EndEvent_DaCapBanCung">
+        <dc:Bounds x="1472" y="407" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_Start_To_TraCuu_di" bpmnElement="Flow_Start_To_TraCuu">
+        <di:waypoint x="238" y="210" />
+        <di:waypoint x="280" y="210" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_Verify_To_GatewayApproved_di" bpmnElement="Flow_Verify_To_GatewayApproved">
-        <di:waypoint x="390" y="200" />
-        <di:waypoint x="455" y="200" />
+      <bpmndi:BPMNEdge id="Flow_TraCuu_To_HopLe_di" bpmnElement="Flow_TraCuu_To_HopLe">
+        <di:waypoint x="410" y="210" />
+        <di:waypoint x="455" y="210" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_Approved_Yes_di" bpmnElement="Flow_Approved_Yes">
-        <di:waypoint x="505" y="200" />
-        <di:waypoint x="585" y="200" />
+      <bpmndi:BPMNEdge id="Flow_KhongHopLe_di" bpmnElement="Flow_KhongHopLe">
+        <di:waypoint x="480" y="185" />
+        <di:waypoint x="480" y="118" />
+        <di:waypoint x="540" y="118" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_Approved_No_di" bpmnElement="Flow_Approved_No">
-        <di:waypoint x="480" y="225" />
-        <di:waypoint x="480" y="312" />
+      <bpmndi:BPMNEdge id="Flow_KhongDuDK_End_di" bpmnElement="Flow_KhongDuDK_End">
+        <di:waypoint x="680" y="118" />
+        <di:waypoint x="722" y="118" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_Type_Soft_di" bpmnElement="Flow_Type_Soft">
-        <di:waypoint x="610" y="175" />
-        <di:waypoint x="610" y="130" />
-        <di:waypoint x="720" y="130" />
+      <bpmndi:BPMNEdge id="Flow_HopLe_di" bpmnElement="Flow_HopLe">
+        <di:waypoint x="505" y="210" />
+        <di:waypoint x="565" y="210" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_Type_Hard_di" bpmnElement="Flow_Type_Hard">
-        <di:waypoint x="610" y="225" />
-        <di:waypoint x="610" y="280" />
-        <di:waypoint x="720" y="280" />
+      <bpmndi:BPMNEdge id="Flow_STP_di" bpmnElement="Flow_STP">
+        <di:waypoint x="615" y="210" />
+        <di:waypoint x="825" y="210" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_Soft_To_End_di" bpmnElement="Flow_Soft_To_End">
-        <di:waypoint x="860" y="130" />
-        <di:waypoint x="900" y="130" />
-        <di:waypoint x="900" y="200" />
-        <di:waypoint x="942" y="200" />
+      <bpmndi:BPMNEdge id="Flow_CanDuyet_di" bpmnElement="Flow_CanDuyet">
+        <di:waypoint x="590" y="235" />
+        <di:waypoint x="590" y="365" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_Hard_To_End_di" bpmnElement="Flow_Hard_To_End">
-        <di:waypoint x="860" y="280" />
-        <di:waypoint x="900" y="280" />
-        <di:waypoint x="900" y="200" />
-        <di:waypoint x="942" y="200" />
+      <bpmndi:BPMNEdge id="Flow_Timer_To_NhacViec_di" bpmnElement="Flow_Timer_To_NhacViec">
+        <di:waypoint x="590" y="463" />
+        <di:waypoint x="590" y="495" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_NhacViec_End_di" bpmnElement="Flow_NhacViec_End">
+        <di:waypoint x="665" y="532" />
+        <di:waypoint x="712" y="532" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Duyet_To_DongY_di" bpmnElement="Flow_Duyet_To_DongY">
+        <di:waypoint x="655" y="405" />
+        <di:waypoint x="705" y="405" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_DongY_di" bpmnElement="Flow_DongY">
+        <di:waypoint x="730" y="380" />
+        <di:waypoint x="730" y="300" />
+        <di:waypoint x="850" y="300" />
+        <di:waypoint x="850" y="235" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_TuChoi_di" bpmnElement="Flow_TuChoi">
+        <di:waypoint x="755" y="405" />
+        <di:waypoint x="800" y="405" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_TuChoi_End_di" bpmnElement="Flow_TuChoi_End">
+        <di:waypoint x="940" y="405" />
+        <di:waypoint x="982" y="405" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Merge_To_SinhPDF_di" bpmnElement="Flow_Merge_To_SinhPDF">
+        <di:waypoint x="875" y="210" />
+        <di:waypoint x="920" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SinhPDF_To_GuiEmail_di" bpmnElement="Flow_SinhPDF_To_GuiEmail">
+        <di:waypoint x="1055" y="210" />
+        <di:waypoint x="1095" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GuiEmail_To_CanBanCung_di" bpmnElement="Flow_GuiEmail_To_CanBanCung">
+        <di:waypoint x="1230" y="210" />
+        <di:waypoint x="1275" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_KhongBanCung_di" bpmnElement="Flow_KhongBanCung">
+        <di:waypoint x="1325" y="210" />
+        <di:waypoint x="1422" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CoBanCung_di" bpmnElement="Flow_CoBanCung">
+        <di:waypoint x="1300" y="235" />
+        <di:waypoint x="1300" y="425" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PhatBanCung_End_di" bpmnElement="Flow_PhatBanCung_End">
+        <di:waypoint x="1430" y="425" />
+        <di:waypoint x="1472" y="425" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
