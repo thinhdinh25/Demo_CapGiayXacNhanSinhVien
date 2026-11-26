@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer');
 const { generateCertificatePDF } = require('./pdfService');
 
 const DEFAULT_GAS_WEBHOOK_URL =
-  'https://script.google.com/macros/s/AKfycbyJYSq9WGRLCMKpVxtKfPOt8FnXw_lYGy8C0owrGsD_Fppcoqn-3sjA56ruYvxTFScZlA/exec';
+  'https://script.google.com/macros/s/AKfycbzo2ojBAYWh-kvxEjdIorsFgQQmF8Pjmp-cmLdcJBpd1DRY2fJdALI3AvqpFi4MEyAzjg/exec';
 
 function createSmtpTransporter(config) {
   return nodemailer.createTransport({
@@ -95,7 +95,7 @@ async function sendEmailUniversal({ to, subject, html, pdfBuffer, filename, requ
       });
 
       const mailOptions = {
-        from: process.env.SMTP_FROM || '"Phòng Công tác Sinh viên - UET" <ctsv@vnu.edu.vn>',
+        from: process.env.SMTP_FROM || '"Phòng Công tác Sinh viên - UET" <thinhdinh26117@gmail.com>',
         to: actualRecipient,
         subject,
         html,
@@ -239,7 +239,7 @@ async function sendRejectionNoticeEmail(requestData, reasonText, options = {}) {
  */
 async function sendSlaOverdueReminderEmail(requestData, slaThresholdLabel, options = {}) {
   const staffRecipient =
-    process.env.SLA_NOTIFY_EMAIL || process.env.SMTP_USER || 'ctsv@vnu.edu.vn';
+    process.env.SLA_NOTIFY_EMAIL || 'thinhdinh26117@gmail.com';
 
   const html = `
     <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111827; max-width: 640px; border: 1px solid #fcd34d; padding: 24px; background:#ffffff;">

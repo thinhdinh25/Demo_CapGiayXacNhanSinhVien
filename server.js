@@ -21,7 +21,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 let runtimeGoogleClientId = (process.env.GOOGLE_CLIENT_ID || '').trim();
 let restrictVnuDomainOnly = process.env.GOOGLE_RESTRICT_VNU_DOMAIN === 'true';
 const adminEmailSet = new Set(
-  String(process.env.ADMIN_EMAILS || 'ctsv@vnu.edu.vn,admin@vnu.edu.vn')
+  String(process.env.ADMIN_EMAILS || 'ctsv@vnu.edu.vn,admin@vnu.edu.vn,thinhdinh26117@gmail.com')
     .split(',')
     .map((s) => s.trim().toLowerCase())
     .filter(Boolean)
@@ -33,7 +33,7 @@ const ADMIN_ACCOUNT = {
   password: '123',
   role: 'ADMIN',
   fullName: 'Phòng Công tác Sinh viên - UET',
-  defaultEmail: 'ctsv@vnu.edu.vn'
+  defaultEmail: 'thinhdinh26117@gmail.com'
 };
 
 const sessions = new Map();
